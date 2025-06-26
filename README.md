@@ -1,59 +1,23 @@
-# ClinicaOnLineAguirre
+TP FINAL "CLINICA ONLINE"
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
+Home / Pagina Bienvenida
 
-## Development server
+Login, con botones de usuarios para acceso rápido
 
-To start a local development server, run:
+Registro, para pacientes y especialistas
 
-```bash
-ng serve
-```
+Seccion Mi Perfil para Pacientes, donde pueden ver su historia clinica y diferentes datos. Tambien pueden descargar la historia clinica en PDF
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Seccion Mi Perfil para Especialista, donde pueden ver sus datos y modificar la dispinibilidad horario para sus especialidades
 
-## Code scaffolding
+Seccion Solicitar Turno para los usuarios pacientes, donde pueden solicitar un turno en simples pasos
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Seccion Solicitar Turno desde un perfil de tipo Admin, donde pueden solicitar un turno para algun paciente en simples pasos
 
-```bash
-ng generate component component-name
-```
+Seccions Mis Turnos para los pacientes, donde pueden ver sus turnos, filtrarlos y realizar diferentes acciones
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Seccions Mis Turnos para los especialistas, donde al igual que los pacientes pueden ver sus turnos, filtrarlos y realizar diferentes acciones
 
-```bash
-ng generate --help
-```
+Seccion Usuarios de los usuarios admin, donde pueden ver todos los usuarios, Habilitar/Inhabilitar especialistas, Ver historias clinicas de los pacientes, descargar un excel con todos los usuarios y crear cualquier tipo de usuario
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Sección _Gestionar Turnos _ de los usuarios Admin, donde se listan todos los turnos, se pueden filtrar y se pueden cancelar los que estan pendientes.
