@@ -1,5 +1,11 @@
 <nav class="navbar">
-  <ul>
+  <!-- LOGO A LA IZQUIERDA -->
+  <div class="logo">
+    <img src="assets/logo.png" alt="Logo" />
+  </div>
+
+  <!-- ENLACES EN EL CENTRO -->
+  <ul class="nav-links">
     <li>
       <a
         routerLink="/home"
@@ -7,9 +13,8 @@
         appNavbarBotones
         [hoverBackgroundColor]="'#007bff'"
         [hoverTextColor]="'#ffffff'"
+        >Home</a
       >
-        Home
-      </a>
     </li>
     <li *ngIf="!isLoggedIn">
       <a
@@ -18,9 +23,8 @@
         appNavbarBotones
         [hoverBackgroundColor]="'#007bff'"
         [hoverTextColor]="'#ffffff'"
+        >Ingresar</a
       >
-        Ingresar
-      </a>
     </li>
     <li *ngIf="!isLoggedIn">
       <a
@@ -29,11 +33,9 @@
         appNavbarBotones
         [hoverBackgroundColor]="'#007bff'"
         [hoverTextColor]="'#ffffff'"
-      >
-        Registrarse</a
+        >Registrarse</a
       >
     </li>
-    <!-- Mostrar elementos para usuarios logueados -->
     <li *ngIf="isLoggedIn">
       <a
         routerLink="/mi-perfil"
@@ -41,9 +43,8 @@
         appNavbarBotones
         [hoverBackgroundColor]="'#007bff'"
         [hoverTextColor]="'#ffffff'"
+        >Mi Perfil</a
       >
-        Mi Perfil
-      </a>
     </li>
     <li
       *ngIf="
@@ -75,8 +76,6 @@
         >Solicitar Turno</a
       >
     </li>
-
-    <!-- Mostrar elementos solo para administradores -->
     <li *ngIf="isLoggedIn && tipoUsuario === 'administrador'">
       <a
         routerLink="/usuarios"
@@ -107,8 +106,6 @@
         >Estadisticas</a
       >
     </li>
-
-    <!-- Mostrar elementos solo para especialistas -->
     <li *ngIf="isLoggedIn && tipoUsuario === 'especialista'">
       <a
         routerLink="/pacientes"
@@ -119,20 +116,22 @@
         >Pacientes</a
       >
     </li>
-
-    <!-- Botón de Cerrar Sesión -->
-    <li *ngIf="isLoggedIn" class="logout">
-      <a
-        (click)="logout()"
-        appNavbarBotones
-        [hoverBackgroundColor]="'#007bff'"
-        [hoverTextColor]="'#ffffff'"
-        >Cerrar Sesión
-      </a>
-    </li>
   </ul>
+
+  <div class="logout-button" *ngIf="isLoggedIn">
+    <span class="user-name">{{ fullName }}</span>
+    <!-- 👈  nuevo -->
+    <a
+      (click)="logout()"
+      appNavbarBotones
+      [hoverBackgroundColor]="'#007bff'"
+      [hoverTextColor]="'#ffffff'"
+    >
+      Cerrar Sesión
+    </a>
+  </div>
 </nav>
 
-<main [@routeAnimations]="prepareRoute(outlet)">
+<main>
   <router-outlet #outlet="outlet"></router-outlet>
 </main>

@@ -1,0 +1,262 @@
+:host {
+  display: block;
+  padding: 20px;
+  background: linear-gradient(135deg, #eb92e5, #ffcdd2);
+  font-family: Arial, sans-serif;
+}
+
+/* Títulos */
+h2,
+h3 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Botones de tipo de usuario */
+.tipo-usuario-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tipo-usuario-buttons button {
+  background-color: #f8f9fa;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.tipo-usuario-buttons button:hover {
+  background-color: #007bff;
+  color: white;
+  transform: scale(1.05);
+}
+
+.tipo-usuario-buttons button.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Input y select */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+input[type="file"] {
+  margin-bottom: 15px;
+}
+
+.error small {
+  color: #e74c3c;
+  font-size: 0.85rem;
+}
+
+/* Botones */
+button[type="submit"] {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+/* Contenedor de tarjetas */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  position: relative; /* Para manejar el desplazamiento de las cards */
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, margin-bottom 0.3s ease;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.card-body {
+  padding: 20px;
+  text-align: center;
+}
+
+.card-body h4 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.card-body p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.card-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.card-actions button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.card-actions .btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.card-actions .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.card-actions .btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.card-actions .btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* Historia clínica */
+.historia-clinica {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f8f9fa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.historia-clinica-container {
+  width: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  transition: height 0.3s ease, margin 0.3s ease;
+}
+
+.historia-clinica-container h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Botón para exportar usuarios */
+.btn-descargar-excel {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #28a745;
+  color: white;
+  text-align: center;
+}
+
+.btn-descargar-excel:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+/* Contenedor del formulario */
+.register-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+}
+
+.register-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: auto;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Ajusta la posición según sea necesario */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

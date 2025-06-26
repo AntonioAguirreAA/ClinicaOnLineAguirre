@@ -1,1 +1,15 @@
-<p>home works!</p>
+<div class="home-container">
+  <header class="header">
+    <h1>{{ titulo }}</h1>
+    <p>Bienvenidos a clinica UTN! Elija que desea hacer</p>
+  </header>
+
+  <div class="buttons-container">
+    <button class="btn login-btn" (click)="navegarLogin()">
+      Iniciar Sesión
+    </button>
+    <button class="btn register-btn" (click)="navegarRegistro()">
+      Registrarse
+    </button>
+  </div>
+</div>

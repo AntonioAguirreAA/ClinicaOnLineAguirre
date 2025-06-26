@@ -1,18 +1,20 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from './servicios/auth.service';
+import { Component, OnInit } from '@angular/core';
 import {
+  Router,
   RouterLink,
   RouterLinkActive,
-  RouterModule,
   RouterOutlet,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
+import { AuthService } from './servicios/auth.service';
 import { NavbarBotonesDirective } from './directivas/navbar-botones.directive';
 
 @Component({
   selector: 'app-root',
   standalone: true,
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
   imports: [
     RouterOutlet,
     RouterLink,
@@ -20,48 +22,26 @@ import { NavbarBotonesDirective } from './directivas/navbar-botones.directive';
     CommonModule,
     NavbarBotonesDirective,
   ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  animations: [routeAnimations],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   isLoggedIn = false;
-  tipoUsuario: string | null = null; // 'paciente' o 'administrador'
+  tipoUsuario: string | null = null;
+  fullName = ''; // 👈  nombre + apellido
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
-  prepareRoute(outlet: RouterOutlet): string | null {
-    return (
-      outlet &&
-      outlet.activatedRouteData &&
-      outlet.activatedRouteData['animation']
-    );
-  }
+  ngOnInit(): void {
+    /* sesión */
+    this.auth.user$.subscribe((u) => (this.isLoggedIn = !!u));
 
-  ngOnInit() {
-    this.authService.isLoggedInEmitter.subscribe((loggedIn: boolean) => {
-      this.isLoggedIn = loggedIn;
-
-      if (loggedIn) {
-        // Obtener el perfil del usuario y determinar el tipo
-        this.authService.getUserProfile().then((usuario) => {
-          this.tipoUsuario = usuario?.tipoUsuario || null;
-        });
-      } else {
-        this.tipoUsuario = null;
-      }
+    /* perfil */
+    this.auth.userProfile$.subscribe((profile) => {
+      this.tipoUsuario = profile?.tipoUsuario ?? null;
+      this.fullName = profile ? `${profile.nombre} ${profile.apellido}` : '';
     });
-  }
-
-  goTo(path: string) {
-    this.router.navigate([path]);
   }
 
   logout() {
-    this.authService.logout().then(() => {
-      this.isLoggedIn = false;
-      this.tipoUsuario = null;
-      this.router.navigate(['/home']);
-    });
+    this.auth.logout().then(() => this.router.navigate(['/home']));
   }
 }

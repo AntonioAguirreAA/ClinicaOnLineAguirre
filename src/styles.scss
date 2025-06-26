@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  @extend .gradient-background;
+}
+
+.gradient-background {
+  background: linear-gradient(300deg, rgb(10, 59, 122), rgb(57, 16, 122));
+  background-size: 120% 120%;
+  animation: gradient-animation 12s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -1,33 +1,46 @@
+/**  Modelo unificado que cubre Paciente, Especialista y Administrador  */
 export class Usuario {
-	tipoUsuario: string;
-	id: string;
-	uid: string;
-	nombre: string;
-	apellido: string;
-	edad: number;
-	dni: number;
-	imgUrl1: string;
-	imgUrl2: string;
-	email: string;
-	contrasena: string;
-	aprobado: boolean;
-	especialidades?: string[];
-	ultimosTurnos?: { fecha: string; detalle: string }[];
+  /* ---------- claves y rol ---------- */
+  id: string; // = id de Supabase-Auth
+  tipoUsuario: 'paciente' | 'especialista' | 'administrador';
 
-	constructor(tipoUsuario: string,  uid: string, id: string = '', nombre: string, apellido: string, edad: number, dni: number, imgUrl1: string, imgUrl2: string, email: string, contrasena: string, aprobado: boolean = false, especialidades?: string[]) {
-		this.tipoUsuario = tipoUsuario;
-		this.id = id;
-		this.uid = uid;
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.edad = edad;
-		this.dni = dni;
-		this.imgUrl1 = imgUrl1;
-		this.imgUrl2 = imgUrl2;
-		this.email = email;
-		this.contrasena = contrasena;
-		this.aprobado = aprobado;
-		this.especialidades = especialidades;
-		
-	}
+  /* ---------- datos personales ---------- */
+  nombre: string;
+  apellido: string;
+  edad: number;
+  dni: number;
+
+  /* ---------- contacto ---------- */
+  email: string;
+
+  /* ---------- imágenes ---------- */
+  imgUrl1: string; // siempre
+  imgUrl2?: string; // solo pacientes
+
+  /* ---------- estado y seguridad ---------- */
+  aprobado: boolean; // especialistas
+  contrasena?: string; // (solo local, nunca lo envíes al back)
+
+  /* ---------- campos específicos ---------- */
+  obraSocial?: string; // solo pacientes
+  especialidades?: string[]; // solo especialistas
+  ultimosTurnos?: { fecha: string; detalle: string }[];
+
+  /* ---------- ctor flexible ---------- */
+  constructor(data: Partial<Usuario>) {
+    this.id = data.id || '';
+    this.tipoUsuario = data.tipoUsuario || 'administrador';
+    this.nombre = data.nombre || '';
+    this.apellido = data.apellido || '';
+    this.edad = data.edad || 0;
+    this.dni = data.dni || 0;
+    this.email = data.email || '';
+    this.imgUrl1 = data.imgUrl1 || '';
+    this.imgUrl2 = data.imgUrl2 || '';
+    this.aprobado = data.aprobado !== undefined ? data.aprobado : true;
+    this.contrasena = data.contrasena;
+    this.obraSocial = data.obraSocial;
+    this.especialidades = data.especialidades || [];
+    this.ultimosTurnos = data.ultimosTurnos || [];
+  }
 }

@@ -1,1 +1,217 @@
-<p>lista-usuarios works!</p>
+<div *ngIf="isAdmin; else noAccess">
+  <h2>Gestión de Usuarios</h2>
+
+  <div class="card-container">
+    <!-- Card para cada usuario -->
+    <div
+      *ngFor="let usuario of usuarios"
+      appHoverEffect
+      [hoverColor]="'#f0f0f0'"
+      [hoverTextColor]="'#2c3e50'"
+      [hoverTransform]="'scale(1.05)'"
+      class="card"
+      [appHighlightUserType]="usuario.tipoUsuario"
+    >
+      <!-- Imagen del usuario -->
+      <img
+        [src]="usuario.imgUrl1 || 'ruta-a-imagen-por-defecto.jpg'"
+        alt="Imagen de {{ usuario.nombre }}"
+        class="card-img"
+      />
+      <div class="card-body">
+        <h4>
+          {{
+            usuario.nombre
+              | especialistaNombre : usuario.apellido : usuario.tipoUsuario
+          }}
+        </h4>
+        <p *ngIf="usuario.email">
+          Email:
+          <span class="tooltip-container">
+            {{ usuario.email | censurarEmail : 4 }}
+            <span class="tooltip-text">{{ usuario.email }}</span>
+          </span>
+        </p>
+        <p>Tipo de Usuario: {{ usuario.tipoUsuario }}</p>
+
+        <!-- Botones condicionales -->
+        <div class="card-actions">
+          <button
+            *ngIf="usuario.tipoUsuario === 'especialista' && usuario.aprobado"
+            (click)="inhabilitarEspecialista(usuario)"
+          >
+            Inhabilitar
+          </button>
+          <button
+            *ngIf="usuario.tipoUsuario === 'especialista' && !usuario.aprobado"
+            (click)="habilitarEspecialista(usuario)"
+          >
+            Habilitar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario para Crear Usuarios -->
+  <div class="register-container">
+    <form [formGroup]="registroForm" (ngSubmit)="crearUsuario()">
+      <h2>Crear Nuevo Usuario</h2>
+
+      <label for="tipoUsuario">Tipo de usuario</label>
+      <div class="tipo-usuario-buttons">
+        <button
+          type="button"
+          (click)="setTipoUsuario('paciente')"
+          [class.selected]="tipoUsuario === 'paciente'"
+        >
+          Paciente
+        </button>
+        <button
+          type="button"
+          (click)="setTipoUsuario('especialista')"
+          [class.selected]="tipoUsuario === 'especialista'"
+        >
+          Especialista
+        </button>
+        <button
+          type="button"
+          (click)="setTipoUsuario('administrador')"
+          [class.selected]="tipoUsuario === 'administrador'"
+        >
+          Administrador
+        </button>
+      </div>
+
+      <!-- Campos comunes -->
+      <label for="nombre">Nombre:</label>
+      <input type="text" formControlName="nombre" id="nombre" required />
+      <div
+        *ngIf="
+          registroForm.get('nombre')?.invalid &&
+          registroForm.get('nombre')?.touched
+        "
+        class="error"
+      >
+        <small *ngIf="registroForm.get('nombre')?.errors?.['required']"
+          >El nombre es obligatorio.</small
+        >
+        <small *ngIf="registroForm.get('nombre')?.errors?.['minlength']"
+          >Debe tener al menos 2 caracteres.</small
+        >
+      </div>
+
+      <!-- Resto del formulario -->
+      <!-- Aquí puedes mantener el resto del código de formulario -->
+      <label for="apellido">Apellido:</label>
+      <input type="text" formControlName="apellido" id="apellido" required />
+      <div
+        *ngIf="
+          registroForm.get('apellido')?.invalid &&
+          registroForm.get('apellido')?.touched
+        "
+        class="error"
+      >
+        <small *ngIf="registroForm.get('apellido')?.errors?.['required']"
+          >El apellido es obligatorio.</small
+        >
+        <small *ngIf="registroForm.get('apellido')?.errors?.['minlength']"
+          >Debe tener al menos 2 caracteres.</small
+        >
+      </div>
+
+      <label for="edad">Edad:</label>
+      <input type="number" formControlName="edad" id="edad" required />
+      <div
+        *ngIf="
+          registroForm.get('edad')?.invalid && registroForm.get('edad')?.touched
+        "
+        class="error"
+      >
+        <small *ngIf="registroForm.get('edad')?.errors?.['required']"
+          >La edad es obligatoria.</small
+        >
+        <small *ngIf="registroForm.get('edad')?.errors?.['min']"
+          >Debes tener al menos 18 años.</small
+        >
+        <small *ngIf="registroForm.get('edad')?.errors?.['max']"
+          >La edad no puede ser mayor a 120 años.</small
+        >
+      </div>
+
+      <label for="dni">DNI:</label>
+      <input type="text" formControlName="dni" id="dni" required />
+      <div
+        *ngIf="
+          registroForm.get('dni')?.invalid && registroForm.get('dni')?.touched
+        "
+        class="error"
+      >
+        <small *ngIf="registroForm.get('dni')?.errors?.['required']"
+          >El DNI es obligatorio.</small
+        >
+        <small *ngIf="registroForm.get('dni')?.errors?.['pattern']"
+          >Debe tener solo números y entre 7 y 8 dígitos.</small
+        >
+      </div>
+
+      <!-- Campos específicos para pacientes -->
+      <div *ngIf="tipoUsuario === 'paciente'">
+        <label for="obraSocial">Obra Social:</label>
+        <input
+          type="text"
+          formControlName="obraSocial"
+          id="obraSocial"
+          required
+        />
+        <div
+          *ngIf="
+            registroForm.get('obraSocial')?.invalid &&
+            registroForm.get('obraSocial')?.touched
+          "
+          class="error"
+        >
+          <small *ngIf="registroForm.get('obraSocial')?.errors?.['required']"
+            >La obra social es obligatoria.</small
+          >
+        </div>
+      </div>
+
+      <!-- Campos específicos para especialistas -->
+      <div *ngIf="tipoUsuario === 'especialista'">
+        <label for="especialidad">Especialidad:</label>
+        <select formControlName="especialidad" class="form-control">
+          <option *ngFor="let esp of especialidades" [value]="esp.id">
+            {{ esp.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Imagen de Perfil -->
+      <label for="imagen">Imagen de Perfil:</label>
+      <input
+        type="file"
+        id="imagen"
+        (change)="seleccionarImagen($event)"
+        required
+      />
+      <div
+        *ngIf="
+          registroForm.get('imagen')?.invalid &&
+          registroForm.get('imagen')?.touched
+        "
+        class="error"
+      >
+        <small>La imagen es obligatoria.</small>
+      </div>
+
+      <button type="submit" [disabled]="registroForm.invalid">
+        Crear Usuario
+      </button>
+    </form>
+  </div>
+</div>
+
+<ng-template #noAccess>
+  <p>No tienes permiso para acceder a esta sección.</p>
+</ng-template>
