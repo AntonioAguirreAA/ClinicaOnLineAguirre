@@ -11,12 +11,26 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 
 import { AuthService } from '../../servicios/auth.service';
-import { Usuario } from '../../clases/usuario';
-
 import { HighlightUserTypeDirective } from '../../directivas/usuario-highlight.directive';
-import { HoverEffectDirective } from '../../directivas/hover-effect.directive';
 import { NombreEspecialistaPipe } from '../../pipes/nombre-especialista.pipe';
+import { HoverEffectDirective } from '../../directivas/hover-effect.directive';
 import { CensurarEmailPipe } from '../../pipes/censurar-email.pipe';
+
+/*  Interface con los nombres EXACTOS de la tabla (snake_case)  */
+export interface Usuario {
+  id: string;
+  nombre: string;
+  apellido: string;
+  edad: number;
+  dni: number;
+  email: string;
+  tipo_usuario: 'paciente' | 'especialista' | 'administrador';
+  obra_social: string | null;
+  aprobado: boolean;
+  img_url_1: string | null;
+  img_url_2: string | null;
+  especialidades: string[] | null;
+}
 
 interface Especialidad {
   id: string;
@@ -33,29 +47,26 @@ interface Especialidad {
     FormsModule,
     ReactiveFormsModule,
     HighlightUserTypeDirective,
-    HoverEffectDirective,
     NombreEspecialistaPipe,
+    HoverEffectDirective,
     CensurarEmailPipe,
   ],
 })
 export class ListaUsuariosComponent implements OnInit {
   usuarios: Usuario[] = [];
+  especialidades: Especialidad[] = [];
+
   isAdmin = false;
+  tipoUsuario: 'paciente' | 'especialista' | 'administrador' = 'paciente';
 
   registroForm!: FormGroup;
   imagenSeleccionada: File | null = null;
-  tipoUsuario: 'paciente' | 'especialista' | 'administrador' = 'paciente';
-
-  especialidades: Especialidad[] = [];
   pacienteSeleccionado: Usuario | null = null;
 
   constructor(private auth: AuthService, private fb: FormBuilder) {}
 
-  /* ---------------------------------------------------------------- */
-  async ngOnInit() {
-    const supa = this.auth.getSupabase();
-
-    /* perfil */
+  /* ============================================================= */
+  async ngOnInit(): Promise<void> {
     try {
       const perfil = await this.auth.getUserProfile();
       this.isAdmin = perfil.tipoUsuario === 'administrador';
@@ -63,74 +74,70 @@ export class ListaUsuariosComponent implements OnInit {
         Swal.fire('Acceso denegado', 'Solo administradores.', 'error');
         return;
       }
-      this.inicializarFormulario();
-    } catch (e) {
-      Swal.fire('Error', 'No se pudo verificar el perfil', 'error');
-      return;
-    }
 
-    /* datos */
-    await this.cargarUsuarios();
-    await this.cargarEspecialidades();
+      this.inicializarFormulario();
+      await Promise.all([this.cargarUsuarios(), this.cargarEspecialidades()]);
+    } catch {
+      Swal.fire('Error', 'No se pudo verificar el perfil.', 'error');
+    }
   }
 
-  /* ---------------------------------------------------------------- */
-  async cargarUsuarios() {
+  /* ---------------- CARGA SIN ALIAS ---------------- */
+  async cargarUsuarios(): Promise<void> {
     const { data, error } = await this.auth
       .getSupabase()
       .from('usuarios')
       .select('*');
 
     if (error) {
+      console.error(error);
       Swal.fire('Error', 'No se pudieron cargar los usuarios.', 'error');
       return;
     }
     this.usuarios = data as Usuario[];
   }
 
-  async cargarEspecialidades() {
-    const { data, error } = await this.auth
+  async cargarEspecialidades(): Promise<void> {
+    const { data } = await this.auth
       .getSupabase()
       .from('especialidades')
       .select('*');
-
-    if (!error) this.especialidades = data as Especialidad[];
+    this.especialidades = data as Especialidad[];
   }
 
-  /* ----------------------------------------------------------------
-     ACCIONES SOBRE ESPECIALISTAS */
-  async habilitarEspecialista(u: Usuario) {
-    await this.actualizarEspecialista(u.id, true, 'habilitado');
+  /* =============================================================
+     HABILITAR / INHABILITAR ESPECIALISTA
+  ============================================================= */
+  habilitarEspecialista(u: Usuario) {
+    this.actualizarEspecialista(u, true);
   }
-  async inhabilitarEspecialista(u: Usuario) {
-    await this.actualizarEspecialista(u.id, false, 'inhabilitado');
+  inhabilitarEspecialista(u: Usuario) {
+    this.actualizarEspecialista(u, false);
   }
-  private async actualizarEspecialista(
-    uid: string,
-    aprobado: boolean,
-    msg: string
-  ) {
+
+  private async actualizarEspecialista(u: Usuario, aprobado: boolean) {
     const { error } = await this.auth
       .getSupabase()
       .from('usuarios')
       .update({ aprobado })
-      .eq('id', uid);
+      .eq('id', u.id);
 
     if (error) {
       Swal.fire('Error', 'No se pudo actualizar.', 'error');
     } else {
-      Swal.fire(
-        msg.charAt(0).toUpperCase() + msg.slice(1),
-        `El especialista ha sido ${msg}.`,
+      await Swal.fire(
+        'Éxito',
+        `Especialista ${aprobado ? 'habilitado' : 'inhabilitado'}.`,
         'success'
       );
       this.cargarUsuarios();
     }
   }
 
-  /* ----------------------------------------------------------------
-     CREAR USUARIO */
-  inicializarFormulario() {
+  /* =============================================================
+     FORMULARIO DE ALTA
+  ============================================================= */
+  inicializarFormulario(): void {
     this.registroForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
@@ -151,107 +158,100 @@ export class ListaUsuariosComponent implements OnInit {
     this.tipoUsuario = tipo;
     this.registroForm.get('tipoUsuario')?.setValue(tipo);
 
+    const obraCtrl = this.registroForm.get('obraSocial');
+    const espCtrl = this.registroForm.get('especialidad');
+
     if (tipo === 'paciente') {
-      this.registroForm.get('obraSocial')?.setValidators(Validators.required);
-      this.registroForm.get('especialidad')?.clearValidators();
+      obraCtrl?.setValidators(Validators.required);
+      espCtrl?.clearValidators();
     } else if (tipo === 'especialista') {
-      this.registroForm.get('especialidad')?.setValidators(Validators.required);
-      this.registroForm.get('obraSocial')?.clearValidators();
+      espCtrl?.setValidators(Validators.required);
+      obraCtrl?.clearValidators();
     } else {
-      this.registroForm.get('obraSocial')?.clearValidators();
-      this.registroForm.get('especialidad')?.clearValidators();
+      obraCtrl?.clearValidators();
+      espCtrl?.clearValidators();
     }
-    this.registroForm.get('obraSocial')?.updateValueAndValidity();
-    this.registroForm.get('especialidad')?.updateValueAndValidity();
+    obraCtrl?.updateValueAndValidity();
+    espCtrl?.updateValueAndValidity();
   }
 
-  seleccionarImagen(e: any) {
-    this.imagenSeleccionada = e.target.files[0] ?? null;
+  seleccionarImagen(e: Event) {
+    this.imagenSeleccionada = (e.target as HTMLInputElement).files?.[0] ?? null;
   }
 
-  /* ---------------------------------------------------------------- */
+  /* ---------- crear usuario (JSON snake_case) ---------- */
   async crearUsuario(): Promise<void> {
     if (this.registroForm.invalid) {
       this.registroForm.markAllAsTouched();
       await Swal.fire('Error', 'Completa todos los campos.', 'error');
-      return; // <-- devuelve void
+      return;
     }
 
-    /* 1) sign-up -------------------------------------------------- */
-    const { email, password, ...form } = this.registroForm.value;
-    let signUp;
-    try {
-      signUp = await this.auth.getSupabase().auth.signUp({ email, password });
-    } catch (err: any) {
-      await Swal.fire('Error', err.message, 'error');
-      return; // <-- salida temprana
-    }
+    const { email, password, ...f } = this.registroForm.value;
 
+    /* 1) sign-up */
+    const signUp = await this.auth
+      .getSupabase()
+      .auth.signUp({ email, password });
     const uid = signUp.data.user!.id;
 
-    /* 2) subir imagen -------------------------------------------- */
-    let imgUrl1 = '';
+    /* 2) imagen */
+    let img_url_1 = '';
     if (this.imagenSeleccionada) {
       const safe = this.imagenSeleccionada.name.replace(
         /[^a-zA-Z0-9.\-_]/g,
         '_'
       );
       const path = `usuarios/${uid}/${safe}`;
-
-      const { error } = await this.auth
+      const up = await this.auth
         .getSupabase()
         .storage.from('imagenes')
         .upload(path, this.imagenSeleccionada, { upsert: true });
-
-      if (!error) {
-        imgUrl1 = this.auth
+      if (!up.error) {
+        img_url_1 = this.auth
           .getSupabase()
           .storage.from('imagenes')
           .getPublicUrl(path).data.publicUrl;
       }
     }
 
-    /* 3) insertar en tabla usuarios ------------------------------ */
-    const usuario: Usuario = {
-      id: uid,
-      nombre: form.nombre,
-      apellido: form.apellido,
-      edad: form.edad,
-      dni: form.dni,
-      email,
-      tipoUsuario: form.tipoUsuario,
-      obraSocial: form.tipoUsuario === 'paciente' ? form.obraSocial : null,
-      especialidades:
-        form.tipoUsuario === 'especialista' ? [form.especialidad] : [],
-      aprobado: form.tipoUsuario === 'especialista' ? false : true,
-      imgUrl1,
-      imgUrl2: '',
-    };
-
-    const { error: insertErr } = await this.auth
+    /* 3) insert */
+    const { error } = await this.auth
       .getSupabase()
       .from('usuarios')
-      .insert(usuario);
+      .insert({
+        id: uid,
+        nombre: f.nombre,
+        apellido: f.apellido,
+        edad: f.edad,
+        dni: f.dni,
+        email,
+        tipo_usuario: f.tipoUsuario,
+        obra_social: f.tipoUsuario === 'paciente' ? f.obraSocial : null,
+        especialidades:
+          f.tipoUsuario === 'especialista' ? [f.especialidad] : [],
+        aprobado: f.tipoUsuario === 'especialista' ? false : true,
+        img_url_1,
+        img_url_2: '',
+      });
 
-    if (insertErr) {
+    if (error) {
       await Swal.fire('Error', 'No se pudo crear el usuario.', 'error');
-      return; // <-- error => salida
+      return;
     }
 
-    /* éxito */
     await Swal.fire('Éxito', 'Usuario creado.', 'success');
     await this.cargarUsuarios();
     this.registroForm.reset({ tipoUsuario: 'administrador' });
     this.imagenSeleccionada = null;
-    return; // <-- camino de éxito
   }
 
-  /* ----------------------------------------------------------------
-     VER HISTORIA CLÍNICA / DESCARGAR TURNOS
-     (solo la descarga se muestra adaptada al Storage-RLS en Supabase
-     si ya migraste los turnos).  Aquí se asume una tabla `turnos`.  */
+  /* =============================================================
+     DESCARGA DE TURNOS
+  ============================================================= */
   async descargarTurnos(u: Usuario) {
-    if (u.tipoUsuario !== 'paciente') return;
+    if (u.tipo_usuario !== 'paciente') return;
+
     const { data, error } = await this.auth
       .getSupabase()
       .from('turnos')
@@ -263,15 +263,14 @@ export class ListaUsuariosComponent implements OnInit {
       return;
     }
 
-    /* normaliza fechas */
-    const rows = data.map((t) => ({
+    const sheetData = data.map((t) => ({
       Fecha: new Date(t.fecha).toLocaleString(),
       Especialidad: t.especialidad,
       Especialista: t.especialista ?? 'No asignado',
       Estado: t.estado ?? '—',
     }));
 
-    const sheet = XLSX.utils.json_to_sheet(rows);
+    const sheet = XLSX.utils.json_to_sheet(sheetData);
     const book = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(book, sheet, 'Turnos');
     XLSX.writeFile(book, `turnos-${u.nombre}-${u.apellido}.xlsx`);
@@ -282,16 +281,18 @@ export class ListaUsuariosComponent implements OnInit {
       this.pacienteSeleccionado?.id === u.id ? null : u;
   }
 
-  /* ----------------------------------------------------------------
-     EXPORTAR LISTA COMPLETA */
+  /* =============================================================
+     EXPORTAR LISTA
+  ============================================================= */
   exportarUsuariosExcel() {
     if (!this.isAdmin) return;
+
     const sheet = XLSX.utils.json_to_sheet(
       this.usuarios.map((u) => ({
         Nombre: u.nombre,
         Apellido: u.apellido,
         Email: u.email,
-        Tipo: u.tipoUsuario,
+        Tipo: u.tipo_usuario,
       }))
     );
     const book = XLSX.utils.book_new();

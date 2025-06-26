@@ -26,7 +26,7 @@
 
 .header h1 {
   font-size: 3rem;
-  background: linear-gradient(135deg, #34568b, #ff6f61);
+  background: linear-gradient(135deg, #34568b, #be1000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -64,11 +64,11 @@
 }
 
 .register-btn {
-  background-color: #ff6f61;
+  background-color: #ca1100;
   color: white;
 }
 
 .register-btn:hover {
-  background-color: #e74c3c;
+  background-color: #460700;
   transform: translateY(-3px);
 }

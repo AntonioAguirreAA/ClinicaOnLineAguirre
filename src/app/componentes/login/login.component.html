@@ -35,26 +35,19 @@
     <button type="submit" [disabled]="loginForm.invalid">Ingresar</button>
   </form>
 
-  <!-- acceso rápido (demo) -->
-  <div class="botones-acceso-rapido">
-    <button
-      *ngFor="let u of usuariosAccesoRapido"
-      (click)="autocompletar(u)"
-      class="boton-usuario"
-      [appHighlightUserType]="u.tipoUsuario"
-    >
-      <img
-        *ngIf="u.imgUrl"
-        [src]="u.imgUrl"
-        class="usuario-imagen"
-        alt="{{ u.nombre }}"
-      />
-    </button>
-  </div>
-
   <div *ngIf="flagError" class="error-message">
     {{ msjError }}
   </div>
 
   <p>¿No tienes cuenta? <a [routerLink]="['/registro']">Regístrate aquí</a></p>
+</div>
+<!-- ­──────── BOTONES ACCESO RÁPIDO ──────── -->
+<div class="quick-access">
+  <button
+    *ngFor="let u of usuariosAccesoRapido"
+    (click)="autocompletar(u)"
+    class="quick-btn"
+  >
+    <img [src]="u.imgUrl || 'assets/imagen-por-defecto.png'" />
+  </button>
 </div>
