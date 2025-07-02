@@ -44,4 +44,13 @@ export const routes: Routes = [
   },
   { path: 'pacientes', component: PacientesComponent },
   { path: '**', component: PageNotFoundComponent },
+  {
+  path: 'mis-turnos',
+  canActivate: [TurnosGuard],
+  children: [
+    { path: '', redirectTo: 'paciente', pathMatch: 'full' },
+    { path: 'paciente', component: MisTurnosPacienteComponent },
+    { path: 'especialista', component: MisTurnosEspecialistaComponent }
+  ]
+}
 ];

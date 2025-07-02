@@ -1,1 +1,76 @@
-<p>mis-turnos-paciente works!</p>
+<div class="turnos-container">
+  <h2 class="text-center">Mis Turnos</h2>
+
+  <!-- Filtros -->
+  <div class="filters-container">
+    <input
+      type="text"
+      [(ngModel)]="filtroGlobal"
+      (input)="aplicarFiltroGlobal()"
+      placeholder="Filtrar turnos por cualquier campo..."
+      class="filter-input"
+    />
+  </div>
+
+  <!-- Tabla de Turnos -->
+  <div class="appointments-list">
+    <div *ngFor="let turno of turnosFiltrados" class="appointment-card" [appEstadoCard]="turno.estado">
+      <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+      <p><strong>Especialista:</strong> {{ turno.especialistaNombre }}</p>
+      <p><strong>Fecha:</strong> {{ turno.fecha | date: 'short' }}</p>
+      <p>
+        <strong>Estado:</strong>
+        <span appEstadoTurno="{{ turno.estado }}"> {{ turno.estado | uppercase }}</span>
+      </p>
+
+      <!-- Acciones -->
+      <div class="actions-container"> 
+        <button
+          *ngIf="turno.estado !== 'realizado' && turno.estado !== 'cancelado'"
+          class="btn btn-danger"
+          (click)="cancelarTurno(turno)"
+        >
+          Cancelar Turno
+        </button>
+        <button
+          *ngIf="turno.diagnostico.length > 0"
+          class="btn btn-primary"
+          (click)="verDiagnostico(turno)"
+        >
+          Ver Diagnóstico
+        </button>
+        <button
+          *ngIf="turno.estado === 'realizado' && turno.diagnostico.length > 0"
+          class="btn btn-success"
+          (click)="completarEncuesta(turno)"
+        >
+          Completar Encuesta
+        </button>
+        <button
+          *ngIf="turno.estado === 'realizado'"
+          class="btn btn-info"
+          (click)="calificarAtencion(turno)"
+        >
+          Calificar Atención
+        </button>
+        <button
+          *ngIf="turno.estado === 'realizado'"
+          class="btn btn-info"
+          (click)="verResena(turno)"
+        >
+          Ver Reseña
+        </button>
+        <button
+          *ngIf="turno.comentario && turno.comentario.trim() !== ''"
+          class="btn btn-warning"
+          (click)="verComentario(turno)"
+        >
+          Ver Reseña/Comentario
+        </button>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay turnos -->
+    <p *ngIf="turnosFiltrados.length === 0" class="no-turnos-message">No hay turnos disponibles.</p>
+  </div>
+</div>
