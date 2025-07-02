@@ -1,0 +1,1 @@
+body,html{margin:0;padding:0;height:100%;overflow:hidden;font-family:system-ui,sans-serif}.gradient-background,body{background:linear-gradient(300deg,#0a3b7a,#39107a);background-size:120% 120%;animation:gradient-animation 12s ease infinite}@keyframes gradient-animation{0%{background-position:0% 50%}50%{background-position:100% 50%}to{background-position:0% 50%}}
