@@ -8,11 +8,13 @@ import { Turno } from '../../../clases/turno';
 import Swal from 'sweetalert2';
 import { EstadoTurnoCardDirective } from '../../../directivas/estado-turno-card.directive';
 import { EstadoTurnoDirective } from '../../../directivas/estado-turno.directive';
+import { SUPABASE } from '../../../app.config';
+import { EstadoTurnoPipe } from '../../../pipes/estado-turno.pipe'; 
 
 @Component({
   selector: 'app-mis-turnos-paciente',
   templateUrl: './mis-turnos-paciente.component.html',
-  styleUrls: ['./mis-turnos-paciente.component.css'],
+  styleUrls: ['./mis-turnos-paciente.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -20,6 +22,7 @@ import { EstadoTurnoDirective } from '../../../directivas/estado-turno.directive
     FormsModule,
     EstadoTurnoCardDirective,
     EstadoTurnoDirective,
+    EstadoTurnoPipe,
   ],
 })
 export class MisTurnosPacienteComponent implements OnInit {
@@ -37,7 +40,7 @@ export class MisTurnosPacienteComponent implements OnInit {
   /* -------------------------------------------------- */
   /* dependencias                                        */
   /* -------------------------------------------------- */
-  private supabase = inject<SupabaseClient>('supabase'); // usa el token global
+  private supabase = inject<SupabaseClient>(SUPABASE); // usa el token global
   constructor(private authService: AuthService) {}
 
   /* -------------------------------------------------- */
