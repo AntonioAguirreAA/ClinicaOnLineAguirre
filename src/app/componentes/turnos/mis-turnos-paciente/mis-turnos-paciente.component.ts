@@ -62,7 +62,7 @@ export class MisTurnosPacienteComponent implements OnInit {
     const { data, error } = await this.supabase
       .from('turnos')
       .select('*')
-      .eq('paciente_id', this.usuario.uid) // ajusta si usas .id
+      .eq('paciente_id', this.usuario.id) // ajusta si usas .id
       .order('fecha_hora', { ascending: false });
 
     if (error) {
@@ -82,10 +82,11 @@ export class MisTurnosPacienteComponent implements OnInit {
         row.pacienteNombre,
         row.especialistaNombre,
         row.resenaPaciente,
-        row.resena_especialista,
+row.resenaEspecialista,             
         row.comentario,
         row.diagnostico,
         row.historiaClinica,
+        row.calif_paciente,                      //  antes de row.encuesta
         row.encuesta
       );
     });

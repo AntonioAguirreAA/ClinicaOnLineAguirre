@@ -1,0 +1,45 @@
+<h3>Mis Horarios</h3>
+
+<form [formGroup]="horariosForm" (ngSubmit)="guardarHorarios()">
+  <div formArrayName="especialidades"
+       *ngFor="let especialidad of especialidades.controls; let i = index">
+    <div [formGroupName]="i" class="especialidad">
+      <h4>Especialidad {{ i + 1 }}</h4>
+      <input formControlName="nombre" placeholder="Nombre de la especialidad" required>
+
+      <div class="dias-semana">
+        <label>Días:</label>
+        <button *ngFor="let dia of diasSemana"
+                type="button"
+                (click)="seleccionarDia(i, dia)">
+          {{ dia }}
+        </button>
+      </div>
+
+      <div formArrayName="disponibilidad">
+        <div *ngFor="let horario of getHorarios(i).controls; let j = index"
+             [formGroupName]="j"
+             class="horario">
+          <label>Día:</label>
+          <input formControlName="dia" placeholder="Día" required readonly>
+
+          <label>Desde:</label>
+          <select formControlName="desde" required>
+            <option *ngFor="let op of opcionesHorario" [value]="op">{{ op }}</option>
+          </select>
+
+          <label>Hasta:</label>
+          <select formControlName="hasta" required>
+            <option *ngFor="let op of opcionesHorario" [value]="op">{{ op }}</option>
+          </select>
+
+          <button type="button" (click)="eliminarHorario(i, j)">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Captcha eliminado -->
+
+  <button class="btn-confirmar">Guardar Horarios</button>
+</form>

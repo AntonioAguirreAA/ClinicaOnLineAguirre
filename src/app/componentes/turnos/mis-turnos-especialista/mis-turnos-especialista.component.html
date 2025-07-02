@@ -20,7 +20,7 @@
       <p><strong>Fecha:</strong> {{ turno.fecha | date: 'short'}}</p>
       <p>
         <strong>Estado:</strong>
-        <span appEstadoTurno="{{ turno.estado }}"> {{ turno.estado | uppercase }}</span>
+        <span appEstadoTurno="{{ turno.estado }}"> {{ turno.estado | estadoTurno }}</span>
       </p>
 
       <!-- Acciones -->

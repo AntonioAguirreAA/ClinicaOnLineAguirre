@@ -52,7 +52,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     const { data, error } = await this.supabase
       .from('turnos')
       .select('*')
-      .eq('especialista_id', this.usuario.uid)        // ajusta si usas .id
+      .eq('especialista_id', this.usuario.id)        // ajusta si usas .id
       .order('fecha_hora', { ascending: false });
 
     if (error) {
@@ -71,11 +71,12 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         row.pacienteNombre,
         row.especialistaNombre,
         row.resenaPaciente,
-        row.resena_especialista,
+    row.resenaEspecialista,          // ✅ nombre alineado
         row.comentario,
         row.diagnostico,
         row.historiaClinica,
-        row.encuesta
+    row.calif_paciente,              // ✅ sexto arg. añadido
+        row.encuesta,
       );
     });
 

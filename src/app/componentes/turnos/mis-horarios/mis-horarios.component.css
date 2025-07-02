@@ -1,0 +1,114 @@
+/* Estilos para el componente de horarios */
+h3 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+  
+  .especialidad {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    background-color: #fff;
+  }
+  
+  h4 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: #555;
+  }
+  
+  input[formControlName="nombre"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  
+  .dias-semana {
+    margin-bottom: 10px;
+  }
+  
+  .dias-semana label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .horario {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .horario label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .horario input,
+  .horario select {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    font-size: 0.9rem;
+  }
+  
+  .horario input[readonly] {
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+  }
+  
+  .btn-confirmar {
+    padding: 12px 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+    background-color: #34568b;
+    color: white;
+  }
+  
+  
+  .btn-confirmar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
+  }
+  
+  .btn-confirmar:hover {
+    background-color: #2c4573;
+    transform: scale(1.05);
+  }

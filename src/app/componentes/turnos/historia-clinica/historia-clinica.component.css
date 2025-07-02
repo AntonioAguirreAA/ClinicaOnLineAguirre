@@ -1,0 +1,93 @@
+/* Contenedor general */
+.historia-clinica-container {
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    font-family: system-ui;
+  }
+  
+  /* Título */
+  .historia-clinica-titulo {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #4caf50;
+    padding-bottom: 10px;
+  }
+  
+  /* Tabla */
+  .historia-clinica-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+  }
+  
+  .historia-clinica-tabla th,
+  .historia-clinica-tabla td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .historia-clinica-tabla th {
+    background-color: #4caf50;
+    color: white;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  
+  .historia-clinica-tabla tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .historia-clinica-tabla tr:hover {
+    background-color: #eafaf1;
+  }
+  
+  .historia-clinica-tabla td {
+    color: #2c3e50;
+  }
+  
+  .historia-clinica-tabla .diagnostico {
+    font-weight: bold;
+    color: #4caf50;
+  }
+  
+  .historia-clinica-tabla .datos-dinamicos {
+    font-style: italic;
+    color: #555;
+  }
+  
+  /* Lista de datos dinámicos */
+  .historia-clinica-tabla ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  
+  .historia-clinica-tabla li {
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  
+  /* Mensaje cuando no hay historial */
+  .sin-historial {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 18px;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+  

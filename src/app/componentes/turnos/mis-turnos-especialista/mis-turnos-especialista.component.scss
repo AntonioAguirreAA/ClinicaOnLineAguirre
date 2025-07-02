@@ -1,170 +1,166 @@
-  :host {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #c37342, #c3cfe2);
-    padding: 40px 20px;
-    box-sizing: border-box;
-  }
-  
-  .turnos-container {
-    font-family: system-ui;
-    border: 3px solid #000000;
-    width: 90%;
-    max-width: 1000px;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-  }
-  
-  h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-  }
-  
-  .filters-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    border: 1px solid #000000;
-    gap: 15px; /* Reducido para acercar los filtros entre sí */
-    margin-bottom: 10px; /* Reducido para acercar al listado de turnos */
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 10px 15px; /* Reducido el padding para compactar más el contenedor */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: system-ui;
-  }
-  
-  .appointments-list {
-    padding: 10px;
-  }
-  
-  .filter-input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .filter-input:focus {
-    border-color: #34568b;
-    outline: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .appointments-list {
-    padding: 10px 15px;
-    margin-top: 10px; 
-    border: 1px solid #000000;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .appointment-card {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 10px 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .appointment-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-  }
-  
-  .appointment-card p {
-    margin: 8px 0;
-    font-size: 0.9rem;
-    color: #555;
-  }
-  
-  .badge {
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    color: white;
-  }
-  
-  .badge-warning {
-    background-color: #ffc107;
-    color: #212529;
-  }
-  
-  .badge-success {
-    background-color: #28a745;
-  }
-  
-  .badge-info {
-    background-color: #17a2b8;
-  }
-  
-  .badge-danger {
-    background-color: #dc3545;
-  }
-  
-  .btn {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    color: white;
-  }
-  
-  .btn-warning {
-    background-color: #ffc107;
-    color: #212529;
-  }
-  
-  .btn-success {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .btn-info {
-    background-color: #17a2b8;
-    color: white;
-  }
-  
-  .btn:hover {
-    transform: scale(1.05);
-  }
-  
-  .no-turnos-message {
-    text-align: center;
-    color: #555;
-    font-size: 0.9rem;
-    margin-top: 20px;
-  }
-  
-  .actions-container {
-    display: flex; /* Coloca los botones en fila */
-    gap: 15px; /* Espaciado uniforme entre los botones */
-    margin-top: 10px; /* Espaciado superior para separar del contenido superior */
-  }
-  
-  .actions-container .btn {
-    min-width: 100px; /* Asegura un ancho mínimo para los botones */
-    padding: 10px 15px; /* Mejora el tamaño del botón */
-    text-align: center; /* Centra el texto del botón */
-  }
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 85vh;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  margin-top: 2vh;
+}
+
+.turnos-container {
+  font-family: system-ui;
+  border: 3px solid #000000;
+  width: 90%;
+  max-width: 1000px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.appointments-list {
+  padding: 10px;
+}
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 1px solid #000000;
+  gap: 15px; /* Reducido para acercar los filtros entre sí */
+  margin-bottom: 10px; /* Reducido para acercar al listado de turnos */
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 15px; /* Reducido el padding para compactar más el contenedor */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: system-ui;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-input:focus {
+  border-color: #34568b;
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.appointments-list {
+
+  padding: 10px 15px;
+  margin-top: 10px; 
+  border: 1px solid #000000;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.appointment-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.appointment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.appointment-card p {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-success {
+  background-color: #28a745;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.no-turnos-message {
+  text-align: center;
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 20px;
+}
+
+
+.actions-container {
+  display: flex; /* Alinea los botones en fila horizontal */
+  gap: 10px; /* Espaciado uniforme entre botones */
+  margin-top: 10px; /* Espaciado superior para separar del contenido */
+}
+
+.actions-container .btn {
+  padding: 8px 12px; /* Tamaño del botón */
+  text-align: center; /* Centra el texto en los botones */
+  min-width: 100px; /* Asegura un ancho mínimo para uniformidad */
+}

@@ -1,0 +1,203 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7e98f4, #ebb3b3);
+  padding: 20px;
+}
+
+.perfil-container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: row;
+  gap: 30px; 
+  max-width: 1400px;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px; 
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  font-family: 'Roboto', Arial, sans-serif;
+  border: 2px solid #000000;
+}
+
+
+.info-basica {
+  flex: 1;
+  padding: 25px;
+  background-color: #f7f7f7; 
+  border-right: 2px solid #e0e0e0; 
+}
+
+.info-basica h2 {
+  text-align: center;
+  color: #444;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.info-basica p {
+  margin: 12px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.info-basica strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.imagenes-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.imagenes-container img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.imagenes-container img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Historia clínica */
+.historia-clinica {
+  flex: 2;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.btn-historia-clinica:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
+
+/* Mis Horarios */
+.mis-horarios-container {
+  flex: 2;
+  padding: 25px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-container {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  gap: 15px; 
+  margin-top: 20px;
+}
+
+.btn-historia-clinica {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  background-color: #34568b;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para darle profundidad */
+}
+
+.btn-historia-clinica:hover {
+  background-color: #274b72;
+  transform: scale(1.05);
+}
+
+.btn-historia-clinica:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
+
+.captcha-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+
+@media (max-width: 768px) {
+  .perfil-container {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .info-basica {
+    border-right: none; /* Quitar separador */
+    border-bottom: 2px solid #e0e0e0; /* Separador horizontal */
+  }
+
+  .imagenes-container img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Alinea el contenido horizontalmente en el centro */
+  gap: 12px; /* Incrementa el espacio entre los elementos */
+  margin: 0 auto 20px auto; /* Centra horizontalmente */
+  padding: 15px;
+  background-color: #ffffff; /* Fondo blanco para destacar el filtro */
+  border: 1px solid #ddd; /* Borde sutil */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  max-width: 400px; /* Limita el ancho máximo del contenedor */
+  width: 100%; /* Se adapta al ancho disponible */
+}
+
+.filter-container label {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.filter-select {
+  width: 100%;
+  max-width: 300px; /* Define un ancho máximo para el select */
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filter-select:focus {
+  border-color: #34568b;
+  box-shadow: 0 0 6px rgba(52, 86, 139, 0.5);
+  outline: none;
+}
+
+.filter-select:hover {
+  border-color: #888;
+  background-color: #f3f3f3;
+}

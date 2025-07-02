@@ -29,7 +29,7 @@
         <p *ngIf="usuario.email">
           Email:
           <span class="tooltip-container">
-            {{ usuario.email }}
+            {{ usuario.email  | censurarEmail}}
             <span class="tooltip-text">{{ usuario.email }}</span>
           </span>
         </p>

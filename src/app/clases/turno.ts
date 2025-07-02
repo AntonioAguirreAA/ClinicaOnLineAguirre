@@ -10,6 +10,7 @@ export class Turno {
   resenaPaciente: string;
   resenaEspecialista: string;
   encuestaPaciente?: string;
+  calif_paciente?: number | null;     
   comentario: string = '';
   diagnostico: string = '';
   historiaClinica: {
@@ -34,6 +35,7 @@ export class Turno {
     resenaEspecialista: string = '',
     comentario: string = '',
     diagnostico: string = '',
+    calif_paciente: number | null = null,
     historiaClinica: {
       altura: number;
       peso: number;
@@ -53,6 +55,13 @@ export class Turno {
     this.especialistaNombre = especialistaNombre;
     this.resenaPaciente = resenaPaciente;
     this.resenaEspecialista = resenaEspecialista;
+    this.calif_paciente = calif_paciente;
+    this.encuestaPaciente = '';
+    // Inicializar historiaClinica y encuesta como arreglos vacíos si no se proporcionan
+    this.historiaClinica = historiaClinica;
+    this.encuesta = encuesta; 
+    // Inicializar comentario y diagnostico como cadenas vacías si no se proporcionan
+  
     this.comentario = comentario;
     this.historiaClinica = historiaClinica;
     this.diagnostico = diagnostico;

@@ -1,1 +1,50 @@
-<p>mi-perfil works!</p>
+<div class="perfil-container" *ngIf="usuario">
+  <div class="info-basica">
+    <h2>Mi Perfil</h2>
+    <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+    <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
+    <p><strong>Email:</strong> {{ usuario.email }}</p>
+    <p><strong>Edad:</strong> {{ usuario.edad }}</p>
+    <p><strong>DNI:</strong> {{ usuario.dni }}</p>
+    <p><strong>Tipo de Usuario:</strong> {{ usuario.tipoUsuario }}</p>
+
+    <div class="imagenes-section">
+      <h3>Imagen de Perfil:</h3>
+      <div class="imagenes-container">
+        <img *ngIf="usuario.imgUrl1" [src]="usuario.imgUrl1" alt="Imagen de perfil" class="imagen-perfil">
+      </div>
+    </div>
+
+    <div *ngIf="usuario?.tipoUsuario === 'paciente' && historial.length > 0" class="btn-container">
+      <div class="filter-container">
+        <label for="especialidadSelect">Filtrar por Especialidad:</label>
+        <select id="especialidadSelect" [(ngModel)]="especialidadSeleccionada" class="filter-select">
+          <option value="">Todas</option>
+          <option *ngFor="let especialidad of especialidades">{{ especialidad }}</option>
+        </select>
+      </div>
+      <button
+        class="btn-historia-clinica"
+        (click)="generarHistoriaClinicaPDF()">
+        Descargar Historia Clínica
+      </button>
+    </div>
+  </div>
+  <!-- Historia Clínica -->
+  <div class="historia-clinica" *ngIf="usuario.tipoUsuario === 'paciente'">
+    <app-historia-clinica [pacienteId]="usuario.id"></app-historia-clinica>
+  </div>
+
+  
+  <!-- Mostrar el componente MisHorarios -->
+  <div class="mis-horarios-container" *ngIf="usuario.tipoUsuario === 'especialista'">
+    <app-mis-horarios [usuario]="usuario"></app-mis-horarios>
+  </div>
+  
+</div>
+
+
+<!-- Mensaje si no hay usuario -->
+<div *ngIf="!usuario" class="mensaje-error">
+  <p>No se pudieron cargar los datos del usuario.</p>
+</div>

@@ -1,1 +1,68 @@
-<p>solicitar-turno works!</p>
+<div class="solicitar-turno-container">
+  <h3>Sacar Turno</h3>
+
+  <div *ngIf="tipoUsuario === 'administrador'" class="pacientes">
+    <label for="paciente">Seleccionar Paciente:</label>
+    <select id="paciente" [(ngModel)]="pacienteSeleccionado">
+      <option *ngFor="let paciente of pacientes" [ngValue]="paciente">
+        {{ paciente.nombre }} {{ paciente.apellido }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Mostrar Especialistas -->
+  <div class="especialistas">
+    <div *ngFor="let especialista of especialistas" class="especialista-card">
+      <p class="especialista-nombre">{{ especialista.nombre }} {{ especialista.apellido }}</p>
+      <button 
+        (click)="seleccionarEspecialista(especialista)" 
+        class="btn-redondo">
+        <img [src]="especialista.imagen" alt="{{ especialista.nombre }}">
+      </button>
+    </div>
+  </div>
+  <!-- Mostrar Especialidades -->
+  <div *ngIf="especialistaSeleccionado" class="especialidades-container">
+    <p class="especialidades-titulo">Especialidades de {{especialistaSeleccionado.nombre}}</p>
+    <div class="especialidades">
+      <button *ngFor="let especialidad of especialidadesEspecialista" 
+              (click)="seleccionarEspecialidad(especialidad)" 
+              class="btn-cuadrado">
+        <img [src]="especialidad.imgUrl" alt="{{ especialidad.nombre }}">
+        <p>{{ especialidad.nombre }}</p>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mostrar Días Disponibles -->
+  <div *ngIf="diasDisponibles.length > 0" class="dias-disponibles">
+    <button *ngFor="let dia of diasDisponibles" 
+            (click)="seleccionarDia(dia)" 
+            [ngClass]="{'active': dia === diaSeleccionado}" 
+            class="btn-rectangular">
+      {{ dia }}
+    </button>
+  </div>
+  <div *ngIf="diasDisponibles.length === 0 && especialidadSeleccionada != ''">
+    <p>No hay días disponibles para esta especialidad.</p>
+  </div>
+  
+  <!-- Mostrar Horarios Disponibles -->
+  <div *ngIf="diaSeleccionado" class="horarios-disponibles">
+    <button *ngFor="let horario of horariosDisponibles" 
+            (click)="seleccionarHorario(horario)" 
+            [ngClass]="{'active': horario === horarioSeleccionado}" 
+            class="btn-horario">
+      {{ horario }}
+    </button>
+  </div>
+
+  <!-- Botón para confirmar el turno -->
+  <div *ngIf="diaSeleccionado && horarioSeleccionado">
+    <button 
+      (click)="confirmarTurno()" 
+      class="btn-confirmar" >
+      Confirmar Turno
+    </button>
+  </div>
+</div>
