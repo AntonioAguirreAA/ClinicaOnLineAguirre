@@ -30,11 +30,12 @@ export const routes: Routes = [
     path: 'mis-turnos',
     component: TurnosComponent,
     canActivate: [TurnosGuard],
-  },
-  { path: 'mis-turnos-paciente', component: MisTurnosPacienteComponent },
-  {
-    path: 'mis-turnos-especialista',
-    component: MisTurnosEspecialistaComponent,
+    data: { animation: 'MisTurnos' },
+    children: [
+      { path: '', redirectTo: 'paciente', pathMatch: 'full' },
+      { path: 'paciente',     component: MisTurnosPacienteComponent },
+      { path: 'especialista', component: MisTurnosEspecialistaComponent }
+    ]
   },
   { path: 'solicitar-turno',  component: SolicitarTurnoComponent, data: { animation: 'SolicitarTurno' } },
   { path: 'turnos', component: TurnosComponent, canActivate: [AdminGuard] },

@@ -3,15 +3,13 @@
 
   <div class="pacientes-grid">
     <div class="paciente-card" *ngFor="let p of pacientes">
-      <!-- imagen y nombre -->
       <img [src]="p.imgUrl1 || 'ruta-a-imagen-por-defecto.jpg'"
            alt="Foto de {{ p.nombre }} {{ p.apellido }}" />
 
       <h4>{{ p.nombre | capitalize }} {{ p.apellido | capitalize }}</h4>
 
-      <!-- lista de turnos (se muestra al expandir) -->
   <div *ngIf="pacienteSeleccionado?.id === p.id" class="turnos-box">
-    <h5>Turnos con este especialista</h5>
+    <h5>Turnos con este especialista finalizados</h5>
     <ul>
       <li *ngFor="let t of p.turnos">
         <span class="fecha">{{ t.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
@@ -20,7 +18,6 @@
     </ul>
   </div>
 
-  <!-- FAB centrado en la parte inferior -->
   <button class="fab-btn" (click)="seleccionarPaciente(p)">
     {{ pacienteSeleccionado?.id === p.id ? '▲' : '▼' }}
   </button>

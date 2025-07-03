@@ -76,46 +76,46 @@ export class PacientesComponent implements OnInit {
   }
 
   /* ----------- pacientes atendidos --------------- */
-  private async obtenerPacientesAtendidos(espId: string) {
-    /* 1) turnos del especialista logueado */
-    const { data: turnos } = await this.sb
-      .from('turnos')
-      .select('id, paciente_id, fecha_hora')
-      .eq('especialista_id', espId);
+private async obtenerPacientesAtendidos(espId: string) {
+  /* 1) turnos FINALIZADOS del especialista logueado */
+  const { data: turnos } = await this.sb
+    .from('turnos')
+    .select('id, paciente_id, fecha_hora')
+    .eq('especialista_id', espId)
+    .eq('estado', 'realizado');          // ← solo “finalizados”
 
-    if (!turnos) return [];
+  if (!turnos?.length) return [];
 
-    /* 2) agrupar por paciente */
-    const mapa = new Map<
-      string,
-      { turnos: { id: string; fecha: Date }[] }
-    >();
+  /* 2) agrupar por paciente */
+  const mapa = new Map<string, { turnos: { id: string; fecha: Date }[] }>();
 
-    turnos.forEach(t => {
-      const pid = t.paciente_id;
-      const fecha = new Date(t.fecha_hora);
-      if (!mapa.has(pid)) mapa.set(pid, { turnos: [] });
-      mapa.get(pid)!.turnos.push({ id: t.id, fecha });
+  turnos.forEach(t => {
+    const pid   = t.paciente_id;
+    const fecha = new Date(t.fecha_hora);
+
+    if (!mapa.has(pid)) mapa.set(pid, { turnos: [] });
+    mapa.get(pid)!.turnos.push({ id: t.id, fecha });
+  });
+
+  /* 3) traer datos de cada paciente */
+  const pacientes: any[] = [];
+  for (const [pid, info] of mapa) {
+    const { data: p } = await this.sb
+      .from('usuarios')
+      .select('id, nombre, apellido, img_url_1')
+      .eq('id', pid)
+      .single();
+    if (!p) continue;
+
+    pacientes.push({
+      id:       p.id,
+      nombre:   p.nombre,
+      apellido: p.apellido,
+      imgUrl1:  p.img_url_1,
+      turnos:   info.turnos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime())
     });
-
-    /* 3) traer datos de cada paciente */
-    const pacientes: any[] = [];
-    for (const [pid, info] of mapa) {
-      const { data: p } = await this.sb
-        .from('usuarios')
-        .select('id, nombre, apellido, img_url_1')
-        .eq('id', pid)
-        .single();
-      if (!p) continue;
-
-      pacientes.push({
-        id: p.id,
-        nombre: p.nombre,
-        apellido: p.apellido,
-        imgUrl1: p.img_url_1,
-        turnos: info.turnos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime())
-      });
-    }
-    return pacientes;
   }
+  return pacientes;
+}
+
 }
