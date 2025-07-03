@@ -11,4 +11,5 @@ export interface Usuario {
   imgUrl1?: string | null;
   imgUrl2?: string | null;
   especialidades?: string[];
+    ultimosTurnos?: { fecha: Date; detalle: string }[];
 }

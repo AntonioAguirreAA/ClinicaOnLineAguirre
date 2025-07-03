@@ -1,0 +1,14 @@
+<div class="turnos-especialista-container">
+  <h2>Turnos por Especialista</h2>
+  <div class="filters">
+      <label for="fechaInicio">Fecha Inicio:</label>
+      <input type="date" id="fechaInicio" (change)="onFechaInicioChange($event)" />
+
+      <label for="fechaFin">Fecha Fin:</label>
+      <input type="date" id="fechaFin" (change)="onFechaFinChange($event)" />
+  </div>
+  <div class="chart-container">
+      <canvas #turnosEspecialistaChartCanvas id="turnosEspecialistaChart"></canvas>
+  </div>
+  <button class="btn-pdf" (click)="descargarPDF()">Descargar PDF</button>
+</div>

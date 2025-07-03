@@ -1,0 +1,29 @@
+<div class="container">
+    <h2 class="text-center">Log de Ingresos</h2>
+  
+    <div *ngIf="loading" class="loading">Cargando logs...</div>
+  
+    <div *ngIf="logs.length > 0; else noLogs" class="table-container">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of logs">
+            <td>{{ log.email }}</td>
+            <td>{{ log.fecha?.toDate() | date: 'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="btn-descargar" (click)="descargarExcel()">Descargar Logs en Excel</button>
+
+  
+    <ng-template #noLogs>
+      <p class="text-center">No hay registros de ingreso.</p>
+    </ng-template>
+</div>
+  

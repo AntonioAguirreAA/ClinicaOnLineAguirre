@@ -1,0 +1,23 @@
+<div class="turnos-dia-container">
+  <h2>Turnos por Día</h2>
+
+  <div class="filters">
+    <label for="fechaInicio">Fecha Inicio:</label>
+    <input
+      type="date"
+      id="fechaInicio"
+      (change)="onFechaInicioChange($event)"
+    />
+
+    <label for="fechaFin">Fecha Fin:</label>
+    <input
+      type="date"
+      id="fechaFin"
+      (change)="onFechaFinChange($event)"
+    />
+  </div>
+
+  <canvas id="turnosDiaChart"></canvas>
+
+  <button class="btn-pdf" (click)="descargarPDF()">Descargar PDF</button>
+</div>

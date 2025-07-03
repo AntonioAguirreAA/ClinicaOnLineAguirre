@@ -1,13 +1,8 @@
-/* src/app/pipes/estado-turno.pipe.ts */
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * Formatea el código de estado de un turno a texto legible.
- * Ej.: 'pendiente' → 'Pendiente'
- */
 @Pipe({
   name: 'estadoTurno',
-  standalone: true          // ✔ para proyectos con componentes standalone
+  standalone: true
 })
 export class EstadoTurnoPipe implements PipeTransform {
   transform(estado: string | null | undefined): string {

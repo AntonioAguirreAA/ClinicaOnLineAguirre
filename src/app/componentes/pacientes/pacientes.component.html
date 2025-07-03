@@ -1,1 +1,41 @@
-<p>pacientes works!</p>
+<div *ngIf="pacientes.length > 0; else noPacientes">
+  <h2 class="text-center">Pacientes Atendidos</h2>
+  <div class="card-container">
+    <div class="card" *ngFor="let paciente of pacientes">
+      <img
+        [src]="paciente.imgUrl1 || 'ruta-a-imagen-por-defecto.jpg'"
+        alt="Imagen de {{ paciente.nombre }} {{ paciente.apellido }}"
+        class="card-img"
+      />
+      <div class="card-body">
+        <h4>{{ paciente.nombre | capitalize }} {{ paciente.apellido | capitalize }}</h4>
+        <p>Edad: {{ paciente.edad }}</p>
+        <p>DNI: {{ paciente.dni }}</p>
+        <p>Email: {{ paciente.email }}</p>
+        <h5 style="margin-bottom: 1px;">Últimos Turnos:</h5>
+        <ul>
+          <li *ngFor="let turno of paciente.ultimosTurnos">
+            {{ turno.fecha | date: 'dd/MM/yyyy HH:mm' }}
+          </li>
+        </ul>
+        <button
+          class="btn btn-primary"
+          (click)="mostrarHistoriaClinica(paciente)"
+        >
+          {{ pacienteSeleccionado?.id === paciente.id ? 'Ocultar' : 'Ver' }} Historia Clínica
+        </button>
+      </div>
+      <!-- Historia clínica adaptada -->
+      <div *ngIf="pacienteSeleccionado?.id === paciente.id" class="historia-clinica">
+        <app-historia-clinica
+          *ngIf="pacienteSeleccionado"
+          [pacienteId]="pacienteSeleccionado.id"
+          [isAdmin]="true"
+        ></app-historia-clinica>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #noPacientes>
+  <p class="text-center">No hay pacientes atendidos registrados para este especialista.</p>
+</ng-template>

@@ -1,0 +1,28 @@
+:host {
+  display: flex;
+  flex-direction: column; /* Ordena los elementos de forma vertical */
+  align-items: center; /* Centra horizontalmente los gráficos */
+  gap: 20px; /* Espaciado entre los gráficos */
+  min-height: 70vh;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.btn-descargar {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-descargar:hover {
+  background-color: #45a049;
+}
+
