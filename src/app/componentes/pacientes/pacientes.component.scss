@@ -1,203 +1,139 @@
-:host {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 70vh;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
+/* --- grid --- */
+.pacientes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: flex-start;          /* ← NO estirar todas las tarjetas */
+  font-family: system-ui;
+}
+
+.text-center {
+  text-align: center;
+  margin: 50px;
+  color: #fff;
+  font-size: 40px;
+}
+/* --- tarjeta paciente (más grande) --- */
+.paciente-card {
+  position: relative;
+  width: 280px;
+  padding: 1.5rem;
+  padding-bottom: 3.5rem;        /* espacio para el FAB */
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  transition: transform .25s, box-shadow .25s;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 22px rgba(0,0,0,.12);
   }
-  
-  h2 {
-    font-family: 'Roboto', sans-serif;
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #ffffff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    margin-bottom: 30px;
-  }
-  
-  .table {
-    margin-top: 20px;
-    font-size: 1.2rem;
-    width: 100%;
-    max-width: 1200px; /* Limitar el ancho máximo de la tabla */
-    background-color: #fff;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .table thead {
-    background-color: #343a40;
-    color: white;
-    font-size: 1.3rem;
-    text-transform: uppercase;
-  }
-  
-  .table th, .table td {
-    text-align: center;
-    vertical-align: middle;
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .table tr:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  
-  .paciente-img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
+
+  img {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  
-  .paciente-img:hover {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  .btn {
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-  }
-  
-  .text-center {
-    text-align: center;
-  }
-  
-  .text-muted {
-    font-size: 1.2rem;
-    color: #6c757d;
-  }
-  
-  .ng-template p {
-    font-size: 1.4rem;
-    font-style: italic;
-    color: #444;
-  }
-
-  .card-container {
-    font-family: system-ui;
-    display: flex;
-    flex-direction: column; /* Coloca las tarjetas una debajo de otra */
-    gap: 1rem; /* Espaciado entre tarjetas */
-    width: 100%; /* Asegura que las tarjetas ocupen el ancho del contenedor */
-    align-items: center; /* Centra las tarjetas horizontalmente */
-  }
-  
-  .card {
-    display: flex;
-    flex-direction: column; /* Cambia a columna para apilar los elementos (imagen, contenido, historia clínica) */
-    align-items: stretch; /* Asegura que los elementos ocupen todo el ancho disponible */
-    gap: 1rem; /* Espaciado entre elementos internos */
-    width: 90%; /* Ajusta el ancho de las tarjetas */
-    max-width: 800px; /* Limita el ancho máximo de las tarjetas */
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 1rem;
-    background-color: #fff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    overflow: hidden; /* Evita que elementos internos desborden */
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  
-  .card-img {
-    width: 120px; /* Tamaño de la imagen en las tarjetas */
-    height: 120px;
     object-fit: cover;
-    border-radius: 50%; /* Redondea las imágenes */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-self: center; /* Centra la imagen horizontalmente */
+    margin-bottom: 1rem;
   }
-  
-  .card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra el contenido horizontalmente */
-    gap: 0.5rem; /* Espaciado entre elementos */
-    flex: 1; /* Permite que el contenido ocupe el espacio restante */
-  }
-  
-  .card-body h4 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #333;
-  }
-  
-  .card-body p {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #555;
-    display: flex;
-    align-items: center; /* Centra verticalmente el texto */
-  }
-  
-  .card-body h5 {
-    font-size: 1.3rem;
-    margin-top: 1rem;
-    color: #007bff;
-  }
-  
-  .card-body ul {
-    padding-left: 1rem; /* Espaciado de la lista de últimos turnos */
-    list-style: disc;
-    color: #333;
-  }
-  
-  .card-body ul li {
-    margin: 0.3rem 0;
-    font-size: 1rem;
 
+  h4 {
+    margin: 0 0 1rem;
+    font-size: 1.3rem;
+    color: #333;
   }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
+}
+
+/* --- botón ver/ocultar --- */
+.btn-ver {
+  background: #007bff;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #0056b3;
+  }
+}
+
+/* --- caja de turnos --- */
+.turnos-box {
+  background: #f0f6ff;
+  border: 1px solid #c6ddff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: left;
+
+  h5 {
+    margin: 0 0 0.5rem;
     font-size: 1rem;
-    font-weight: bold;
-    padding: 10px 20px;
+    color: #0056b3;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0.25rem;
+      border-bottom: 1px dashed #b0c8ff;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .fecha {
+    font-size: 0.9rem;
+    color: #333;
+  }
+
+  .btn-reseña {
+    background: none;
     border: none;
-    border-radius: 8px;
+    color: #007bff;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-  }
-  
-  .historia-clinica {
-    width: 100%; /* Asegura que la historia clínica ocupe todo el ancho de la tarjeta */
-    padding: 1rem;
-    background-color: #f9f9f9;
-    border-top: 1px solid #ddd;
-    border-radius: 0 0 8px 8px;
-    box-sizing: border-box;
-  }
+}
+
+/* --- FAB (botón circular solapado) --- */
+.fab-btn {
+  position: absolute;
+  left: 50%;
+  bottom: -24px;                /* mitad afuera */
+  transform: translateX(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  font-size: 1.25rem;           /* ▲ ▼ */
+  line-height: 48px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  transition: background .3s, transform .25s;
+}
+
+.fab-btn:hover {
+  background: #0056b3;
+  transform: translateX(-50%) scale(1.05);
+}

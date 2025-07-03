@@ -1,10 +1,14 @@
+/* -----------------------------------------------------------------
+ * PacientesComponent · lista pacientes atendidos y muestra turnos
+ *   – Al pulsar “Reseña”, levanta un Swal con la reseña real
+ * ----------------------------------------------------------------- */
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupabaseClient } from '@supabase/supabase-js';
+import Swal from 'sweetalert2';
 
 import { Usuario } from '../../clases/usuario';
 import { AuthService } from '../../servicios/auth.service';
-import { HistoriaClinicaComponent } from '../turnos/historia-clinica/historia-clinica.component';
 import { CapitalizarPipe } from '../../pipes/capitalizar-pipe.pipe';
 
 import { SUPABASE } from '../../app.config';
@@ -12,15 +16,17 @@ import { SUPABASE } from '../../app.config';
 @Component({
   selector: 'app-pacientes',
   standalone: true,
-  imports: [CommonModule, HistoriaClinicaComponent, CapitalizarPipe],
   templateUrl: './pacientes.component.html',
   styleUrls: ['./pacientes.component.scss'],
+  imports: [CommonModule, CapitalizarPipe],
 })
 export class PacientesComponent implements OnInit {
-  pacientes: Usuario[] = [];
-  usuario: any;
-  especialistaId = '';
+  pacientes: (Usuario & {
+    turnos: { id: string; fecha: Date }[];
+  })[] = [];
+
   pacienteSeleccionado: Usuario | null = null;
+  especialistaId = '';
 
   /* -------- Supabase -------- */
   private sb = inject<SupabaseClient>(SUPABASE);
@@ -29,76 +35,87 @@ export class PacientesComponent implements OnInit {
 
   /* ---------------- lifecycle ---------------- */
   async ngOnInit() {
-    try {
-      this.usuario        = await this.authService.getUserProfile();
-      this.especialistaId = this.usuario.id;                             // 👈
+    const usuario = await this.authService.getUserProfile();
+    if (!usuario) return;
 
-      this.pacientes = await this.obtenerPacientesAtendidos(this.especialistaId);
-    } catch (e) {
-      console.error('Error al cargar los pacientes:', e);
-    }
+    this.especialistaId = usuario.id;
+    this.pacientes      = await this.obtenerPacientesAtendidos(this.especialistaId);
   }
 
-  /* ------------- toggle Historia Clínica ------------- */
-  mostrarHistoriaClinica(u: Usuario) {
+  /* ------------- despliega / oculta ------------- */
+  seleccionarPaciente(p: Usuario) {
     this.pacienteSeleccionado =
-      this.pacienteSeleccionado?.id === u.id ? null : u;
+      this.pacienteSeleccionado?.id === p.id ? null : p;
   }
 
-  /* ------------- carga pacientes atendidos ------------ */
-  private async obtenerPacientesAtendidos(espId: string): Promise<Usuario[]> {
-    /* 1. traer TODOS los turnos del especialista */
-    const { data: turnos, error } = await this.sb
+  /* ------------- RESEÑA ------------------------- */
+  async verResena(turnoId: string) {
+    const { data, error } = await this.sb
       .from('turnos')
-      .select('paciente_id, fecha_hora, comentario')         // se toman los campos que necesitamos
-      .eq('especialista_id', espId)
-      .order('fecha_hora', { ascending: true });
+      .select('resenaPaciente, "resenaEspecialista", calif_paciente')
+      .eq('id', turnoId)
+      .single();
 
-    if (error || !turnos) { console.error(error); return []; }
+    if (error || !data) {
+      Swal.fire('Sin reseña', 'No se encontró reseña para este turno.', 'info');
+      return;
+    }
 
-    /* 2. agrupar por paciente */
-    const mapa = new Map<string, { turnos: { fecha: Date; detalle: string }[] }>();
+    const html =
+      
+      (data.resenaEspecialista
+        ? `<p><strong>Reseña del especialista:</strong><br>${data.resenaEspecialista}</p>`
+        : '');
+
+    Swal.fire({
+      title: 'Reseña de la consulta',
+      html: html || 'No hay reseña disponible para este turno.',
+      icon: 'info',
+      confirmButtonText: 'Cerrar',
+    });
+  }
+
+  /* ----------- pacientes atendidos --------------- */
+  private async obtenerPacientesAtendidos(espId: string) {
+    /* 1) turnos del especialista logueado */
+    const { data: turnos } = await this.sb
+      .from('turnos')
+      .select('id, paciente_id, fecha_hora')
+      .eq('especialista_id', espId);
+
+    if (!turnos) return [];
+
+    /* 2) agrupar por paciente */
+    const mapa = new Map<
+      string,
+      { turnos: { id: string; fecha: Date }[] }
+    >();
 
     turnos.forEach(t => {
-      const pid  = t.paciente_id;
+      const pid = t.paciente_id;
       const fecha = new Date(t.fecha_hora);
-      const det   = t.comentario ?? '';
-
       if (!mapa.has(pid)) mapa.set(pid, { turnos: [] });
-      mapa.get(pid)!.turnos.push({ fecha, detalle: det });
+      mapa.get(pid)!.turnos.push({ id: t.id, fecha });
     });
 
-    /* 3. traer datos de cada paciente */
-    const pacientes: Usuario[] = [];
+    /* 3) traer datos de cada paciente */
+    const pacientes: any[] = [];
     for (const [pid, info] of mapa) {
-      const { data: p, error } = await this.sb
+      const { data: p } = await this.sb
         .from('usuarios')
-        .select('id, nombre, apellido, edad, dni, email, img_url_1, img_url_2, tipo_usuario, obra_social, aprobado, especialidades')
+        .select('id, nombre, apellido, img_url_1')
         .eq('id', pid)
         .single();
+      if (!p) continue;
 
-      if (error || !p) continue;
-
-      const paciente: Usuario = {
-        id:            p.id,
-        nombre:        p.nombre,
-        apellido:      p.apellido,
-        edad:          p.edad,
-        dni:           p.dni,
-        email:         p.email,
-        imgUrl1:       p.img_url_1,
-        imgUrl2:       p.img_url_2,
-        tipoUsuario:   p.tipo_usuario,
-        obraSocial:    p.obra_social,
-        aprobado:      p.aprobado,
-        especialidades:p.especialidades ?? [],
-        /* campo auxiliar para la UI */
-        ultimosTurnos: info.turnos.slice(-3).reverse()
-      } as any;                              // “as any” si la interface no contempla ultimosTurnos
-
-      pacientes.push(paciente);
+      pacientes.push({
+        id: p.id,
+        nombre: p.nombre,
+        apellido: p.apellido,
+        imgUrl1: p.img_url_1,
+        turnos: info.turnos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime())
+      });
     }
-
     return pacientes;
   }
 }

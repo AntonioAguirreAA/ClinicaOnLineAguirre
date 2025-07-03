@@ -35,6 +35,8 @@ moment.locale('es');
 export class MiPerfilComponent implements OnInit {
   usuario: Usuario | null = null;
   historial: any[] = [];
+especialistas: string[] = [];
+especialistaSeleccionado = '';
   logoUrl = '';
   especialidades: string[] = [];
 
@@ -52,7 +54,9 @@ export class MiPerfilComponent implements OnInit {
 
       if (this.usuario?.tipoUsuario === 'paciente') {
         this.historial = await this.cargarTurnos(this.usuario.id);
-        this.especialidades = [...new Set(this.historial.map(t => t.especialidad || ''))];
+        this.especialistas = [
+        ...new Set(this.historial.map(t => t.especialistaNombre|| ''))
+      ];
       }
     } catch (e) {
       console.error('Error al obtener perfil:', e);
@@ -75,65 +79,71 @@ export class MiPerfilComponent implements OnInit {
       ...row
     }));
 
-    /* traer nombre especialista */
     for (const t of turnos) {
-      if (t.especialista_id) {
-        const { data } = await this.sb
-          .from('usuarios')
-          .select('nombre')
-          .eq('id', t.especialista_id)
-          .single();
-        t.especialistaNombre = data ? data.nombre : 'Desconocido';
-      }
-    }
+  if (t.especialista_id) {
+    const { data } = await this.sb
+      .from('usuarios')
+      .select('nombre, apellido')
+      .eq('id', t.especialista_id)
+      .single();
+
+    t.especialistaNombre = data
+      ? `${data.nombre} ${data.apellido}`
+      : 'Desconocido';
+  }
+}
     return turnos;
   }
 
   /* ------------- generar PDF historia -------------- */
   async generarHistoriaClinicaPDF() {
-    const logo = 'assets/logo.png';
-    try {
-      const doc = new jsPDF();
-      const logo64 = await this.toBase64(logo);
-      doc.addImage(logo64, 'PNG', 10, 10, 50, 30);
+  const logo = 'assets/logo.png';
+  try {
+    const doc = new jsPDF();
+    const logo64 = await this.toBase64(logo);
+    doc.addImage(logo64, 'PNG', 10, 10, 50, 30);
 
-      doc.setFontSize(18).setFont('helvetica', 'bold');
-      doc.text('Historia Clínica', 80, 20);
+    doc.setFontSize(18).setFont('helvetica', 'bold')
+       .text('Historia Clínica', 80, 20);
 
-      doc.setFontSize(12).setFont('helvetica', 'normal');
-      doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 10, 50);
-      doc.text(`Paciente: ${this.usuario?.nombre} ${this.usuario?.apellido}`, 10, 60);
-      doc.text(`DNI: ${this.usuario?.dni}`, 10, 70);
-      doc.text(`Email: ${this.usuario?.email}`, 10, 80);
+    doc.setFontSize(12).setFont('helvetica', 'normal');
+    doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 10, 50);
+    doc.text(`Paciente: ${this.usuario?.nombre} ${this.usuario?.apellido}`, 10, 60);
+    doc.text(`DNI: ${this.usuario?.dni}`, 10, 70);
+    doc.text(`Email: ${this.usuario?.email}`, 10, 80);
 
-      const historial = this.historial.filter(t =>
-        !this.especialidadSeleccionada || t.especialidad === this.especialidadSeleccionada
-      );
+    /* === FILTRO POR ESPECIALISTA === */
+    const historial = this.historial.filter(t =>
+      ( !this.especialistaSeleccionado ||
+        t.especialistaNombre === this.especialistaSeleccionado ) &&
+      Array.isArray(t.historiaClinica) &&
+      t.historiaClinica.length > 0
+    );
 
-      autoTable(doc, {
-        startY: 90,
-        head: [['Fecha', 'Especialidad', 'Especialista', 'Diagnóstico', 'Reseña']],
-        body: historial.map(t => [
-          t.fecha || 'N/A',
-          t.especialidad || 'N/A',
-          t.especialistaNombre || 'Desconocido',
-          `Diagnóstico: ${t.diagnostico || 'Sin diagnóstico'}\n` +
-          `Altura: ${t.historiaClinica?.[0]?.altura || 'N/A'} cm, ` +
-          `Peso: ${t.historiaClinica?.[0]?.peso || 'N/A'} kg, ` +
-          `Temp: ${t.historiaClinica?.[0]?.temperatura || 'N/A'} °C, ` +
-          `Presión: ${t.historiaClinica?.[0]?.presion || 'N/A'}`,
-          t.resenaEspecialista || 'Sin reseña',
-        ]),
-        styles: { fontSize: 10, cellPadding: 4 },
-        headStyles: { fillColor: [76, 175, 80], textColor: 255 },
-      });
+    autoTable(doc, {
+      startY: 90,
+      head: [['Fecha', 'Especialidad', 'Especialista', 'Diagnóstico', 'Reseña']],
+      body: historial.map(t => [
+        t.fecha || 'N/A',
+        t.especialidad || 'N/A',
+        t.especialistaNombre || 'Desconocido',
+        `Diagnóstico: ${t.diagnostico || 'Sin diagnóstico'}\n` +
+        `Altura: ${t.historiaClinica?.[0]?.altura || 'N/A'} cm, ` +
+        `Peso: ${t.historiaClinica?.[0]?.peso || 'N/A'} kg, ` +
+        `Temp: ${t.historiaClinica?.[0]?.temperatura || 'N/A'} °C, ` +
+        `Presión: ${t.historiaClinica?.[0]?.presion || 'N/A'}`,
+        t.resenaEspecialista || 'Sin reseña',
+      ]),
+      styles: { fontSize: 10, cellPadding: 4 },
+      headStyles: { fillColor: [255, 0, 0], textColor: 255 },
+    });
 
-      doc.save(`Historia_Clinica_${this.usuario?.nombre}_${this.usuario?.apellido}.pdf`);
-    } catch (e) {
-      console.error(e);
-      Swal.fire('Error', 'No se pudo generar el PDF', 'error');
-    }
+    doc.save(`Historia_Clinica_${this.usuario?.nombre}_${this.usuario?.apellido}.pdf`);
+  } catch (e) {
+    console.error(e);
+    Swal.fire('Error', 'No se pudo generar el PDF', 'error');
   }
+}
 
   private toBase64(url: string): Promise<string> {
     return new Promise((resolve, reject) => {

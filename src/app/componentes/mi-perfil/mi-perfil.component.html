@@ -19,20 +19,23 @@
       </div>
     </div>
 
-    <div *ngIf="usuario?.tipoUsuario === 'paciente' && historial.length > 0" class="btn-container">
-      <div class="filter-container">
-        <label for="especialidadSelect">Filtrar por Especialidad:</label>
-        <select id="especialidadSelect" [(ngModel)]="especialidadSeleccionada" class="filter-select">
-          <option value="">Todas</option>
-          <option *ngFor="let especialidad of especialidades">{{ especialidad }}</option>
-        </select>
-      </div>
-      <button
-        class="btn-historia-clinica"
-        (click)="generarHistoriaClinicaPDF()">
-        Descargar Historia Clínica
-      </button>
-    </div>
+    <div class="btn-container" *ngIf="usuario?.tipoUsuario === 'paciente' && historial.length > 0">
+  <div class="filter-container">
+    <label for="especialistaSelect">Filtrar por Especialista:</label>
+    <select id="especialistaSelect"
+            [(ngModel)]="especialistaSeleccionado"
+            class="filter-select">
+      <option value="">Todos</option>
+      <option *ngFor="let esp of especialistas">{{ esp }}</option>
+    </select>
+  </div>
+
+  <button class="btn-historia-clinica"
+          (click)="generarHistoriaClinicaPDF()">
+    Descargar Historia Clínica
+  </button>
+</div>
+
   </div>
   <!-- Historia Clínica -->
   <div class="historia-clinica" *ngIf="usuario.tipoUsuario === 'paciente'">

@@ -1,41 +1,33 @@
-<div *ngIf="pacientes.length > 0; else noPacientes">
+<ng-container *ngIf="pacientes.length; else noPacientes">
   <h2 class="text-center">Pacientes Atendidos</h2>
-  <div class="card-container">
-    <div class="card" *ngFor="let paciente of pacientes">
-      <img
-        [src]="paciente.imgUrl1 || 'ruta-a-imagen-por-defecto.jpg'"
-        alt="Imagen de {{ paciente.nombre }} {{ paciente.apellido }}"
-        class="card-img"
-      />
-      <div class="card-body">
-        <h4>{{ paciente.nombre | capitalize }} {{ paciente.apellido | capitalize }}</h4>
-        <p>Edad: {{ paciente.edad }}</p>
-        <p>DNI: {{ paciente.dni }}</p>
-        <p>Email: {{ paciente.email }}</p>
-        <h5 style="margin-bottom: 1px;">Últimos Turnos:</h5>
-        <ul>
-          <li *ngFor="let turno of paciente.ultimosTurnos">
-            {{ turno.fecha | date: 'dd/MM/yyyy HH:mm' }}
-          </li>
-        </ul>
-        <button
-          class="btn btn-primary"
-          (click)="mostrarHistoriaClinica(paciente)"
-        >
-          {{ pacienteSeleccionado?.id === paciente.id ? 'Ocultar' : 'Ver' }} Historia Clínica
-        </button>
-      </div>
-      <!-- Historia clínica adaptada -->
-      <div *ngIf="pacienteSeleccionado?.id === paciente.id" class="historia-clinica">
-        <app-historia-clinica
-          *ngIf="pacienteSeleccionado"
-          [pacienteId]="pacienteSeleccionado.id"
-          [isAdmin]="true"
-        ></app-historia-clinica>
-      </div>
+
+  <div class="pacientes-grid">
+    <div class="paciente-card" *ngFor="let p of pacientes">
+      <!-- imagen y nombre -->
+      <img [src]="p.imgUrl1 || 'ruta-a-imagen-por-defecto.jpg'"
+           alt="Foto de {{ p.nombre }} {{ p.apellido }}" />
+
+      <h4>{{ p.nombre | capitalize }} {{ p.apellido | capitalize }}</h4>
+
+      <!-- lista de turnos (se muestra al expandir) -->
+  <div *ngIf="pacienteSeleccionado?.id === p.id" class="turnos-box">
+    <h5>Turnos con este especialista</h5>
+    <ul>
+      <li *ngFor="let t of p.turnos">
+        <span class="fecha">{{ t.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+        <button class="btn-reseña" (click)="verResena(t.id)">Reseña</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- FAB centrado en la parte inferior -->
+  <button class="fab-btn" (click)="seleccionarPaciente(p)">
+    {{ pacienteSeleccionado?.id === p.id ? '▲' : '▼' }}
+  </button>
     </div>
   </div>
-</div>
+</ng-container>
+
 <ng-template #noPacientes>
-  <p class="text-center">No hay pacientes atendidos registrados para este especialista.</p>
+  <p class="text-center">No hay pacientes atendidos registrados.</p>
 </ng-template>
