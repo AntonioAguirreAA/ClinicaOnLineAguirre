@@ -7,8 +7,15 @@
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
+  justify-content: center; /* Centra los elementos verticalmente */
 }
-
+.estadisticas-container {
+  width: 100%;
+  max-width: 1200px; /* Ancho máximo para el contenedor */
+  margin: 0 auto; /* Centra el contenedor en la página */
+  display: flex;
+  flex-direction: column; /* Ordena los elementos de forma vertical */
+}
 .btn-descargar {
   padding: 10px 20px;
   font-size: 16px;

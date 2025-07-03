@@ -126,7 +126,7 @@ export class LoginComponent {
       /* ------------------ 3️⃣  LOG DE ACCESO (opcional) ----------- */
       await this.auth
         .getSupabase()
-        .from('login_logs')
+        .from('logins')
         .insert({ user_id: user!.id, email: user!.email });
 
       /* ------------------ 4️⃣  OK ------------------ */

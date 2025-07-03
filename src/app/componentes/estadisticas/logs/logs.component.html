@@ -14,7 +14,7 @@
         <tbody>
           <tr *ngFor="let log of logs">
             <td>{{ log.email }}</td>
-            <td>{{ log.fecha?.toDate() | date: 'short' }}</td>
+            <td>{{ log.fecha| date: 'short' }}</td>
           </tr>
         </tbody>
       </table>

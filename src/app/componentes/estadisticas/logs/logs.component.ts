@@ -1,10 +1,10 @@
-/* src/app/…/logs/logs.component.ts */
+/* src/app/.../logs/logs.component.ts */
 import { CommonModule }   from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
 import * as XLSX          from 'xlsx';
 
-import { SUPABASE } from '../../../app.config';   // ← token con tu instancia
+import { SUPABASE } from '../../../app.config';   // token con tu instancia
 
 @Component({
   selector   : 'app-logs',
@@ -15,12 +15,18 @@ import { SUPABASE } from '../../../app.config';   // ← token con tu instancia
 })
 export class LogsComponent implements OnInit {
 
-  logs: any[]  = [];
-  loading      = false;
+  logs: {
+    id   : string;
+    email: string;
+    fecha: Date | null;
+  }[] = [];
+
+  loading = false;
 
   /* -------- Supabase -------- */
   private sb = inject<SupabaseClient>(SUPABASE);
 
+  /* ---------------- lifecycle ----------------- */
   async ngOnInit(): Promise<void> {
     await this.cargarLogs();
   }
@@ -31,19 +37,18 @@ export class LogsComponent implements OnInit {
     this.loading = true;
 
     try {
-      /* consulta: tabla “logins”, orden descendente por fecha */
       const { data, error } = await this.sb
-        .from('logins')
-        .select('*')
+        .from('logins')                     // tabla logins
+        .select('id, email, fecha')         // solo los campos que usamos
         .order('fecha', { ascending: false });
 
       if (error) throw error;
 
+      /* mapeo → objeto listo para el template */
       this.logs = (data ?? []).map(row => ({
-        ...row,
-        /* si quieres formatear la fecha en el template,
-           deja el Date aquí preparado:                */
-        fecha: row.fecha ? new Date(row.fecha) : null
+        id   : row.id,
+        email: row.email,
+        fecha: row.fecha ? new Date(row.fecha) : null   // Date listo para el pipe
       }));
 
     } catch (e) {
