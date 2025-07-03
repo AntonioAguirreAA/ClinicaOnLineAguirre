@@ -35,31 +35,31 @@ export class LoginComponent {
       imgUrl: 'https://cdn-icons-png.freepik.com/512/9703/9703596.png',
     },
     {
-      email: 'teyvatmerch@gmail.com',
+      email: 'especialista1@especialista1.com',
       password: '123123',
       imgUrl:
-        'https://tsosbachehngqtnsgkum.supabase.co/storage/v1/object/public/imagenes/usuarios/e391a45d-2b4e-482b-adfa-216b47e62765/1-Eidolon_Phainon.png',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Fred_Engels.png/250px-Fred_Engels.png',
     },
     {
-      email: 'especialista@especialista.com',
+      email: 'especialista2@especialista2.com',
       password: '123123',
       imgUrl:
-        'https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_oO6YW1sHTnKxby4GcjCvtypUCWjnQRg5.jpg',
+        'https://media.ambito.com/p/8cd3270a29724a4b8b3076fd1bdb80b5/adjuntos/239/imagenes/038/536/0038536692/julio-cortazarjpg.jpg',
     },
     {
-      email: 'demo4@demo.com',
+      email: 'user1@user1.com',
       password: '123123',
-      imgUrl: 'assets/demo/esp1.jpg',
+      imgUrl: 'https://www.elviejotopo.com/wp-content/uploads/2017/11/Lenin-3.jpg',
     },
     {
-      email: 'demo5@demo.com',
+      email: 'user2@user2.com',
       password: '123123',
-      imgUrl: 'assets/demo/esp2.jpg',
+      imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Marie_Curie_%281900%29.jpg/250px-Marie_Curie_%281900%29.jpg',
     },
     {
-      email: 'admin@demo.com',
+      email: 'user3@user3.com',
       password: '123123',
-      imgUrl: 'assets/demo/admin.jpg',
+      imgUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGLFzRj3U0vDSk-g6cFN3jaNxgF1DUb19Skw&s',
     },
   ];
 

@@ -214,34 +214,51 @@ row.resenaEspecialista,
     });
   }
 
+  /* ---------- calificar atención (comentario + 1-5) ---------- */
   async calificarAtencion(turno: Turno) {
-    if (turno.estado !== 'realizado') return;
+    if (turno.estado !== 'realizado' || turno.resenaPaciente) return;   // ⬅️
 
-    const { value: resena } = await Swal.fire({
+    const { value: form } = await Swal.fire({
       title: 'Calificar Atención',
-      input: 'textarea',
-      inputLabel: 'Escribe tu reseña',
-      inputPlaceholder: 'Escribe tu reseña aquí...',
+      html: `
+        <label>Calificación (1-5):</label>
+        <select id="rating" class="swal2-select">
+          <option value="">--</option>
+          <option *ngFor="let n of [1,2,3,4,5]" [value]="n">{{n}}</option>
+        </select>
+        <label>Reseña:</label>
+        <textarea id="review" class="swal2-textarea"
+          placeholder="Escribe tu reseña…"></textarea>
+      `,
+      focusConfirm: false,
       showCancelButton: true,
+      preConfirm: () => {
+        const rating = (document.getElementById('rating') as HTMLSelectElement).value;
+        const review = (document.getElementById('review')  as HTMLTextAreaElement).value.trim();
+        if (!rating || !review) {
+          Swal.showValidationMessage('Calificación y reseña son obligatorias');
+          return null;
+        }
+        return { rating: Number(rating), review };
+      }
     });
 
-    if (resena) {
-      const { error } = await this.supabase
-        .from('turnos')
-        .update({ resenaPaciente: resena })
-        .eq('id', turno.id);
+    if (!form) return;
 
-      if (!error) {
-        Swal.fire(
-          'Reseña guardada',
-          'Tu reseña ha sido guardada exitosamente.',
-          'success'
-        );
-        await this.cargarTurnos();
-      } else {
-        console.error(error);
-        Swal.fire('Error', 'Hubo un problema al guardar la reseña.', 'error');
-      }
+    const { error } = await this.supabase
+      .from('turnos')
+      .update({
+        resenaPaciente: form.review,
+        calif_paciente: form.rating
+      })
+      .eq('id', turno.id);
+
+    if (!error) {
+      Swal.fire('¡Gracias!', 'Tu calificación fue registrada', 'success');
+      await this.cargarTurnos();    // ← recarga lista y oculta botón
+    } else {
+      console.error(error);
+      Swal.fire('Error', 'No se pudo guardar tu reseña', 'error');
     }
   }
 
@@ -264,25 +281,17 @@ row.resenaEspecialista,
           <option value="3">3</option><option value="4">4</option>
           <option value="5">5</option>
         </select>
-        <label>¿Fue puntual el especialista?</label>
-        <select id="puntualidad" class="swal2-select">
-          <option value="1">1</option><option value="2">2</option>
-          <option value="3">3</option><option value="4">4</option>
-          <option value="5">5</option>
-        </select>
       `,
       focusConfirm: false,
       showCancelButton: true,
       preConfirm: () => {
         const atencion = (document.getElementById('atencion') as HTMLSelectElement).value;
-        const puntualidad = (document.getElementById('puntualidad') as HTMLSelectElement).value;
-        if (!atencion || !puntualidad) {
-          Swal.showValidationMessage('Debes completar ambas preguntas');
+        if (!atencion) {
+          Swal.showValidationMessage('Debes completar la pregunta');
           return null;
         }
         return [
-          { pregunta: '¿Cómo calificarías la atención?', respuesta: atencion },
-          { pregunta: '¿Fue puntual el especialista?', respuesta: puntualidad },
+          { pregunta: '¿Cómo calificarías la atención?', respuesta: atencion }
         ];
       },
     });

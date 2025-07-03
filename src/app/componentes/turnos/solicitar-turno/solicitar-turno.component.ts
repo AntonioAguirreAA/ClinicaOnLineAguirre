@@ -33,6 +33,7 @@ export class SolicitarTurnoComponent implements OnInit {
   diasDisponibles: string[] = [];
   horariosDisponibles: string[] = [];
   cargando = true;
+    horariosReservados = new Set<string>(); 
 
   usuario: Usuario | null = null;
   tipoUsuario = '';
@@ -145,13 +146,17 @@ export class SolicitarTurnoComponent implements OnInit {
     });
   }
 
-  /* -------------- selección especialidad ------------ */
+  /* ---------------- selección especialidad ------------ */
   seleccionarEspecialidad(esp: Especialidad) {
     this.especialidadSeleccionada = esp.nombre;
+
     const disp = this.especialistaSeleccionado.especialidades
       .find((e: any) => e.nombre === esp.nombre)?.disponibilidad;
 
     this.diasDisponibles = disp ? this.generarDiasDisponibles(disp) : [];
+    this.diaSeleccionado = '';               // reset
+    this.horariosDisponibles = [];
+    this.horariosReservados.clear();
   }
 
   generarDiasDisponibles(disp: any[]): string[] {
@@ -167,8 +172,13 @@ export class SolicitarTurnoComponent implements OnInit {
     return arr;
   }
 
-  seleccionarDia(d: string) {
+  /* ---------------- seleccionar día ------------------ */
+  async seleccionarDia(d: string) {
     this.diaSeleccionado = d;
+    this.horarioSeleccionado = '';
+    this.horariosReservados.clear();
+
+    /* ❶ genera las franjas como antes */
     const disp = this.especialistaSeleccionado.especialidades
       .find((e: any) => e.nombre === this.especialidadSeleccionada)
       ?.disponibilidad.filter((dd: any) =>
@@ -186,6 +196,26 @@ export class SolicitarTurnoComponent implements OnInit {
         desde.add(30, 'minutes');
       }
     });
+
+    /* ❷ consulta turnos ya reservados para ese especialista-día-especialidad */
+    const startDay = moment(d).startOf('day').toISOString();
+    const endDay   = moment(d).endOf('day').toISOString();
+
+    const { data, error } = await this.sb
+      .from('turnos')
+      .select('fecha_hora')
+      .eq('especialista_id', this.especialistaSeleccionado.uid)
+      .eq('especialidad', this.especialidadSeleccionada)
+      .not('estado', 'in', '("cancelado")')
+      .gte('fecha_hora', startDay)
+      .lte('fecha_hora', endDay);
+
+    if (!error && data) {
+      data.forEach(t => {
+        const hhmm = moment(t.fecha_hora).format('HH:mm');
+        this.horariosReservados.add(hhmm);   // sólo la hora inicial
+      });
+    }
   }
 
   seleccionarHorario(h: string) { this.horarioSeleccionado = h; }

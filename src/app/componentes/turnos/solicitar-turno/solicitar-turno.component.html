@@ -48,14 +48,19 @@
   </div>
   
   <!-- Mostrar Horarios Disponibles -->
-  <div *ngIf="diaSeleccionado" class="horarios-disponibles">
-    <button *ngFor="let horario of horariosDisponibles" 
-            (click)="seleccionarHorario(horario)" 
-            [ngClass]="{'active': horario === horarioSeleccionado}" 
-            class="btn-horario">
-      {{ horario }}
-    </button>
-  </div>
+<div *ngIf="diaSeleccionado" class="horarios-disponibles">
+  <button *ngFor="let horario of horariosDisponibles"
+          (click)="seleccionarHorario(horario)"
+          [disabled]="horariosReservados.has(horario.split(' - ')[0])"
+          [ngClass]="{
+            active: horario === horarioSeleccionado,
+            ocupado: horariosReservados.has(horario.split(' - ')[0])
+          }"
+          class="btn-horario">
+    {{ horario }}
+  </button>
+</div>
+
 
   <!-- Botón para confirmar el turno -->
   <div *ngIf="diaSeleccionado && horarioSeleccionado">

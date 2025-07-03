@@ -96,9 +96,19 @@ export class AuthService {
 
     /* mapear snake_case → camelCase si fuera necesario */
     const usuario: Usuario = {
-      ...data,
-      tipoUsuario: (data as any).tipo_usuario ?? (data as any).tipoUsuario,
-    };
+    id:             data.id,
+    nombre:         data.nombre,
+    apellido:       data.apellido,
+    edad:           data.edad,
+    dni:            data.dni,
+    email:          data.email,
+    tipoUsuario:    data.tipo_usuario,        // ← ya estaba
+    obraSocial:     data.obra_social,
+    aprobado:       data.aprobado,
+    imgUrl1:        data.img_url_1 ?? null,   // ← NUEVO
+    imgUrl2:        data.img_url_2 ?? null,   // ← NUEVO
+    especialidades: data.especialidades ?? [],
+  };
 
     this.userProfileSubject.next(usuario);
     return usuario;

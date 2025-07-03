@@ -91,7 +91,7 @@ export class MiPerfilComponent implements OnInit {
 
   /* ------------- generar PDF historia -------------- */
   async generarHistoriaClinicaPDF() {
-    const logo = 'https://cdn-icons-png.flaticon.com/512/75/75264.png';
+    const logo = 'assets/logo.png';
     try {
       const doc = new jsPDF();
       const logo64 = await this.toBase64(logo);
