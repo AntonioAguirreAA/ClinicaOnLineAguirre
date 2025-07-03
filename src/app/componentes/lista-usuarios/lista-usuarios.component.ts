@@ -8,15 +8,16 @@ import {
   FormGroup,
 } from '@angular/forms';
 import Swal from 'sweetalert2';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 import { AuthService } from '../../servicios/auth.service';
 import { HighlightUserTypeDirective } from '../../directivas/usuario-highlight.directive';
 import { NombreEspecialistaPipe } from '../../pipes/nombre-especialista.pipe';
 import { HoverEffectDirective } from '../../directivas/hover-effect.directive';
 import { CensurarEmailPipe } from '../../pipes/censurar-email.pipe';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-/*  Interface con los nombres EXACTOS de la tabla (snake_case)  */
 export interface Usuario {
   id: string;
   nombre: string;
@@ -65,7 +66,6 @@ export class ListaUsuariosComponent implements OnInit {
 
   constructor(private auth: AuthService, private fb: FormBuilder) {}
 
-  /* ============================================================= */
   async ngOnInit(): Promise<void> {
     try {
       const perfil = await this.auth.getUserProfile();
@@ -82,7 +82,6 @@ export class ListaUsuariosComponent implements OnInit {
     }
   }
 
-  /* ---------------- CARGA SIN ALIAS ---------------- */
   async cargarUsuarios(): Promise<void> {
     const { data, error } = await this.auth
       .getSupabase()
@@ -105,9 +104,6 @@ export class ListaUsuariosComponent implements OnInit {
     this.especialidades = data as Especialidad[];
   }
 
-  /* =============================================================
-     HABILITAR / INHABILITAR ESPECIALISTA
-  ============================================================= */
   habilitarEspecialista(u: Usuario) {
     this.actualizarEspecialista(u, true);
   }
@@ -134,9 +130,6 @@ export class ListaUsuariosComponent implements OnInit {
     }
   }
 
-  /* =============================================================
-     FORMULARIO DE ALTA
-  ============================================================= */
   inicializarFormulario(): void {
     this.registroForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
@@ -281,22 +274,133 @@ export class ListaUsuariosComponent implements OnInit {
       this.pacienteSeleccionado?.id === u.id ? null : u;
   }
 
-  /* =============================================================
-     EXPORTAR LISTA
-  ============================================================= */
-  exportarUsuariosExcel() {
-    if (!this.isAdmin) return;
 
-    const sheet = XLSX.utils.json_to_sheet(
-      this.usuarios.map((u) => ({
-        Nombre: u.nombre,
-        Apellido: u.apellido,
-        Email: u.email,
-        Tipo: u.tipo_usuario,
-      }))
-    );
-    const book = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(book, sheet, 'Usuarios');
-    XLSX.writeFile(book, 'lista-usuarios.xlsx');
+  /* =============================================================
+   EXPORTAR LISTA (EXCLUYE ADMIN + CAMPOS NO DESEADOS) CON ESTILO
+=============================================================*/
+exportarUsuariosExcel() {
+  if (!this.isAdmin) return;
+
+  /* 1. Filtrar y omitir campos */
+  const datos = this.usuarios
+    .filter(u => u.tipo_usuario !== 'administrador')
+    .map(({ id, img_url_1, img_url_2, especialidades, ...rest }) => rest);
+
+  if (!datos.length) {
+    Swal.fire('Sin datos', 'No hay usuarios para exportar.', 'info');
+    return;
   }
+
+  /* 2. Crear hoja SIN cabeceras */
+  const headers = Object.keys(datos[0]);
+  const ws = XLSX.utils.json_to_sheet(datos, {
+    skipHeader: true,   // importante
+  });
+
+  /* 3. Insertar cabeceras en A1 */
+  XLSX.utils.sheet_add_aoa(ws,
+    [headers.map(h => h.toUpperCase())],
+    { origin: 'A1' }
+  );
+
+  /* 4. Estilos */
+  const rango = XLSX.utils.decode_range(ws['!ref']!);
+
+  // Encabezado (fila 0)
+  headers.forEach((_, c) => {
+    const celda = XLSX.utils.encode_cell({ r: 0, c });
+    ws[celda].s = {
+      font: { bold: true, sz: 14, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '007bff' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: {
+        top:    { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left:   { style: 'thin', color: { rgb: '000000' } },
+        right:  { style: 'thin', color: { rgb: '000000' } },
+      },
+    };
+  });
+
+  // Datos (fila 1 en adelante)
+  for (let R = 1; R <= rango.e.r; R++) {
+    for (let C = 0; C <= rango.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws[addr]) continue;
+      ws[addr].s = {
+        font: { sz: 12 },
+        border: {
+          top:    { style: 'thin', color: { rgb: '000000' } },
+          bottom: { style: 'thin', color: { rgb: '000000' } },
+          left:   { style: 'thin', color: { rgb: '000000' } },
+          right:  { style: 'thin', color: { rgb: '000000' } },
+        },
+      };
+    }
+  }
+
+  /* 5. Ancho de columnas simple */
+  ws['!cols'] = headers.map(() => ({ wch: 18 }));
+
+  /* 6. Descargar */
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
+  XLSX.writeFile(wb, 'lista-usuarios.xlsx');
+}
+
+async descargarTurnosPdf(u: Usuario) {
+  if (u.tipo_usuario !== 'paciente') return;
+
+  /* 1. Traer turnos del paciente */
+  const { data: turnos, error } = await this.auth
+    .getSupabase()
+    .from('turnos')
+    .select('id, fecha_hora, especialidad, estado, especialista_id')
+    .eq('paciente_id', u.id);
+
+  if (error || !turnos?.length) {
+    Swal.fire('Sin turnos', 'Este paciente no posee turnos.', 'info');
+    return;
+  }
+
+  /* 2. Obtener nombres de especialistas (mapa) */
+  const ids = [...new Set(turnos.map(t => t.especialista_id))];
+  const { data: especialistas } = await this.auth
+    .getSupabase()
+    .from('usuarios')
+    .select('id, nombre, apellido')
+    .in('id', ids);
+
+  const mapaEsp = new Map(
+    (especialistas ?? []).map(e => [e.id, `${e.nombre} ${e.apellido}`])
+  );
+
+  /* 3. Crear PDF */
+  const doc = new jsPDF('p', 'mm', 'a4');
+  doc.setFontSize(16).text('Listado de turnos', 105, 18, { align: 'center' });
+  doc.setFontSize(12);
+  doc.text(`Paciente: ${u.nombre} ${u.apellido}`, 14, 30);
+  doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 14, 38);
+
+  /* 4. Tabla */
+  autoTable(doc, {
+    startY: 46,
+    head: [['Día', 'Fecha', 'Especialista', 'Especialidad', 'Estado']],
+    body: turnos.map(t => {
+      const fecha = new Date(t.fecha_hora);
+      return [
+        fecha.toLocaleDateString('es-AR', { weekday: 'long' }),
+        fecha.toLocaleString(),
+        mapaEsp.get(t.especialista_id) ?? '—',
+        t.especialidad,
+        t.estado,
+      ];
+    }),
+    styles: { fontSize: 9, cellPadding: 3 },
+    headStyles: { fillColor: [0, 123, 255], textColor: 255 },
+  });
+
+  doc.save(`turnos-${u.nombre}-${u.apellido}.pdf`);
+}
+
 }
