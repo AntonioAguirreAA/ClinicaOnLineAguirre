@@ -121,16 +121,23 @@ row.resenaEspecialista,
   /* filtros                                             */
   /* -------------------------------------------------- */
   aplicarFiltroGlobal() {
-    const filtro = this.filtroGlobal.toLowerCase();
-    this.turnosFiltrados = this.turnos.filter((t) => {
-      return (
-        (t.estado && t.estado.toLowerCase().includes(filtro)) ||
-        (t.especialistaNombre &&
-          t.especialistaNombre.toLowerCase().includes(filtro)) ||
-        (t.especialidad && t.especialidad.toLowerCase().includes(filtro))
-      );
-    });
-  }
+  const filtro = this.filtroGlobal.trim().toLowerCase();
+
+  this.turnosFiltrados = this.turnos.filter(t => {
+    const clinicaTxt = JSON.stringify(t.historiaClinica ?? [])
+                        .toLowerCase();
+
+    return (
+      (t.estado?.toLowerCase().includes(filtro)) ||
+      (t.especialistaNombre?.toLowerCase().includes(filtro)) ||
+      (t.especialidad?.toLowerCase().includes(filtro)) ||
+      (t.diagnostico?.toLowerCase().includes(filtro)) ||
+      (t.resenaPaciente?.toLowerCase().includes(filtro)) ||
+      (t.resenaEspecialista?.toLowerCase().includes(filtro)) ||
+      clinicaTxt.includes(filtro)
+    );
+  });
+}
 
   /* -------------------------------------------------- */
   /* acciones de usuario                                 */

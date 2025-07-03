@@ -71,11 +71,11 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         row.pacienteNombre,
         row.especialistaNombre,
         row.resenaPaciente,
-    row.resenaEspecialista,          // ✅ nombre alineado
+    row.resenaEspecialista, 
         row.comentario,
         row.diagnostico,
         row.historiaClinica,
-    row.calif_paciente,              // ✅ sexto arg. añadido
+    row.calif_paciente,
         row.encuesta,
       );
     });
@@ -199,185 +199,122 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   async finalizarTurno(turno: Turno) {
-    if (turno.estado !== 'aceptado') return;
+  if (turno.estado !== 'aceptado') return;
 
-    const { value: formValues } = await Swal.fire({
-      title: 'Finalizar Turno',
-      html: `
-            <div class="custom-html-container">
-            <div class="form-row">
-                <label>Altura (cm):</label>
-                <input id="altura" type="number" class="swal2-input" placeholder="Altura en cm">
-            </div>
+  const { value: form } = await Swal.fire({
+    title: 'Finalizar Turno',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText:  'Cancelar',
+    buttonsStyling : true,
+      reverseButtons    : true,
+    showCancelButton:  true,
+    customClass: {
+      popup:          'custom-popup',
+      cancelButton:   'swal-btn-cancelar',
+      confirmButton:  'swal-btn-confirmar',
+    },
+    html: `
+      <div class="custom-html-container">
 
-            <div class="form-row">
-                <label>Peso (kg):</label>
-                <input id="peso" type="number" class="swal2-input" placeholder="Peso en kg">
-            </div>
+        <!-- datos “fijos” --------------------------------------------------- -->
+        <div class="form-row"><label>Altura (cm):</label>
+          <input id="altura" type="number" class="swal2-input" placeholder="Altura">
+        </div>
+        <div class="form-row"><label>Peso (kg):</label><br/>
+          <input id="peso" type="number" class="swal2-input" placeholder="Peso">
+        </div>
+        <div class="form-row"><label>Temperatura (°C):</label>
+          <input id="temperatura" type="number" class="swal2-input" placeholder="Temperatura">
+        </div>
+        <div class="form-row"><label>Presión (mmHg):</label>
+          <input id="presion" type="text" class="swal2-input" placeholder="120/80">
+        </div>
 
-            <div class="form-row">
-                <label>Temperatura (°C):</label>
-                <input id="temperatura" type="number" class="swal2-input" placeholder="Temperatura en °C">
-            </div>
-
-            <div class="form-row">
-                <label>Presión (mmHg):</label>
-                <input id="presion" type="text" class="swal2-input" placeholder="Presión arterial (ej. 120/80)">
-            </div>
-
-            <h5>Datos Dinámicos con Controles Específicos</h5>
-
-            <div class="form-row">
-            <label>Clave (rango):</label>
-            <input id="clave1" type="text" class="swal2-input" placeholder="Clave">
-            <div class="range-container">
-              <input 
-                id="rango" 
-                type="range" 
-                min="0" 
-                max="100" 
-                class="range-input" 
-                oninput="document.getElementById('rangoValue').textContent = this.value">
-              <div class="range-value">
-                <span id="rangoValue">50</span>
+        <!-- sólo los 3 datos dinámicos ------------------------------------- -->
+        <h5>Datos Dinámicos</h5>
+        ${Array.from({ length: 3 })
+          .map(
+            (_, i) => `
+              <div class="form-row">
+                <label>Clave ${i+1}:</label>
+                <input id="clave${i+1}" type="text" class="swal2-input" placeholder="Clave">
               </div>
-            </div>
-          </div>
+              <div class="form-row">
+                <label>Valor:</label>
+        <input id="valor${i + 1}" type="text" class="swal2-input" placeholder="Valor">
+              </div>`
+          )
+          .join('')}
 
-            <div class="form-row">
-                <label>Clave (número):</label>
-                <input id="clave2" type="text" class="swal2-input" placeholder="Clave">
-                <input id="numero" type="number" class="swal2-input" placeholder="Número">
-            </div>
+        <!-- diagnóstico / reseña ------------------------------------------- -->
+        <h5>Diagnóstico y Reseña</h5>
+        <div class="form-row"><label>Diagnóstico:</label>
+          <textarea id="diagnostico" class="swal2-textarea"
+            placeholder="Escribe el diagnóstico aquí…"></textarea>
+        </div>
+        <div class="form-row"><label>Reseña Especialista:</label>
+          <textarea id="resena" class="swal2-textarea"
+            placeholder="Escribe la reseña…"></textarea>
+        </div>
+      </div>
+    `,
+    preConfirm: () => {
+      /* --- campos principales ------------------------------------------- */
+      const altura       = (document.getElementById('altura')       as HTMLInputElement).value;
+      const peso         = (document.getElementById('peso')         as HTMLInputElement).value;
+      const temperatura  = (document.getElementById('temperatura')  as HTMLInputElement).value;
+      const presion      = (document.getElementById('presion')      as HTMLInputElement).value;
+      const diagnostico  = (document.getElementById('diagnostico')  as HTMLTextAreaElement).value.trim();
+      const resenaEsp    = (document.getElementById('resena')       as HTMLTextAreaElement).value.trim();
 
-            <div class="form-row">
-              <label>Clave (Sí/No):</label>
-              <input id="clave3" type="text" class="swal2-input" placeholder="Clave">
-              <div class="switch-container">
-                <input id="switch" type="checkbox" class="switch-input">
-                <label for="switch" class="switch-label">
-                  <span class="switch-indicator"></span>
-                </label>
-              </div>
-            </div>
-
-            <h5>Otros Datos Dinámicos</h5>
-            ${Array.from({ length: 3 })
-              .map(
-                (_, i) => `
-                <div class="form-row">
-                    <label>Clave ${i + 4}:</label>
-                    <input id="clave${i + 4}" type="text" class="swal2-input" placeholder="Clave">
-                </div>
-                <div class="form-row">
-                    <label>Valor ${i + 4}:</label>
-                    <input id="valor${i + 4}" type="text" class="swal2-input" placeholder="Valor">
-                </div>
-                `
-              )
-              .join('')}
-
-            <h5>Diagnóstico y Reseña</h5>
-
-            <div class="form-row">
-                <label>Diagnóstico:</label>
-                <textarea id="diagnostico" class="swal2-textarea" placeholder="Escribe el diagnóstico aquí..."></textarea>
-            </div>
-
-            <div class="form-row">
-                <label>Reseña Especialista:</label>
-                <textarea id="resena" class="swal2-textarea" placeholder="Escribe la reseña del turno aquí..."></textarea>
-            </div>
-          </div>
-        `,
-      focusConfirm: false,
-            showCancelButton: true,
-            customClass: {
-                popup: 'custom-popup',
-                title: 'custom-title',
-                confirmButton: 'custom-confirm-button',
-                cancelButton: 'custom-cancel-button',
-                htmlContainer: 'custom-html-container',
-            },
-            buttonsStyling: false,
-            didOpen: () => {
-              // Recuperar los elementos asegurando sus tipos
-              const switchInput = document.getElementById('switch') as HTMLInputElement | null;
-              const switchText = document.querySelector('.switch-text') as HTMLElement | null;
-            
-              // Verificar si los elementos existen antes de agregar eventos
-              if (switchInput && switchText) {
-                switchInput.addEventListener('change', () => {
-                  switchText.textContent = switchInput.checked ? 'Sí' : 'No';
-                });
-              }
-            },
-            preConfirm: () => {
-                const altura = (document.getElementById('altura') as HTMLInputElement)?.value;
-                const peso = (document.getElementById('peso') as HTMLInputElement)?.value;
-                const temperatura = (document.getElementById('temperatura') as HTMLInputElement)?.value;
-                const presion = (document.getElementById('presion') as HTMLInputElement)?.value;
-                const diagnostico = (document.getElementById('diagnostico') as HTMLTextAreaElement)?.value;
-                const resenaEspecialista = (document.getElementById('resena') as HTMLTextAreaElement)?.value;
-
-                const rango = (document.getElementById('rango') as HTMLInputElement)?.value;
-                const numero = (document.getElementById('numero') as HTMLInputElement)?.value;
-                const switchValue = (document.getElementById('switch') as HTMLInputElement)?.checked ? 'Sí' : 'No';
-
-                const datosDinamicos = [
-                    { clave: (document.getElementById('clave1') as HTMLInputElement)?.value, valor: rango },
-                    { clave: (document.getElementById('clave2') as HTMLInputElement)?.value, valor: numero },
-                    { clave: (document.getElementById('clave3') as HTMLInputElement)?.value, valor: switchValue },
-                    ...Array.from({ length: 3 })
-                        .map((_, i) => {
-                            const clave = (document.getElementById(`clave${i + 4}`) as HTMLInputElement)?.value;
-                            const valor = (document.getElementById(`valor${i + 4}`) as HTMLInputElement)?.value;
-                            return clave && valor ? { clave, valor } : null;
-                        })
-                        .filter((dato) => dato !== null),
-                ];
-
-                if (!altura || !peso || !temperatura || !presion || !diagnostico || !resenaEspecialista) {
-                    Swal.showValidationMessage('Todos los campos principales son obligatorios');
-                    return null;
-                }
-
-                return {
-                    historiaClinica: [
-                        {
-                            altura: Number(altura),
-                            peso: Number(peso),
-                            temperatura: Number(temperatura),
-                            presion,
-                            datosDinamicos,
-                        },
-                    ],
-                    diagnostico,
-                    resenaEspecialista,
-                };
-            },
-    });
-
-    if (formValues) {
-      const { historiaClinica, diagnostico, resenaEspecialista } = formValues;
-
-      const { error } = await this.supabase
-        .from('turnos')
-        .update({
-          estado: 'realizado',
-          historiaClinica,
-          diagnostico,
-          resenaEspecialista,
-        })
-        .eq('id', turno.id);
-
-      if (!error) {
-        Swal.fire('Turno finalizado', 'El turno ha sido finalizado.', 'success');
-        await this.cargarTurnos();
-      } else {
-        console.error(error);
-        Swal.fire('Error', 'Hubo un problema al finalizar el turno.', 'error');
+      /* --- validar ------------------------------------------------------ */
+      if (!altura || !peso || !temperatura || !presion || !diagnostico || !resenaEsp) {
+        Swal.showValidationMessage('Todos los campos son obligatorios');
+        return null;
       }
-    }
+
+      /* --- datos dinámicos (sólo 3) ------------------------------------ */
+      const datosDinamicos = Array.from({ length: 3 })
+        .map((_, i) => {
+          const clave = (document.getElementById(`clave${i + 1}`) as HTMLInputElement).value.trim();
+          const valor = (document.getElementById(`valor${i + 1}`) as HTMLInputElement).value.trim();
+          return clave && valor ? { clave, valor } : null;
+        })
+        .filter(Boolean);                                        // ← descarta vacíos
+
+      return {
+        historiaClinica: [{
+          altura: Number(altura),
+          peso: Number(peso),
+          temperatura: Number(temperatura),
+          presion,
+          datosDinamicos,
+        }],
+        diagnostico,
+        resenaEspecialista: resenaEsp,
+      };
+    },
+  });
+
+  if (!form) return;  // cancelado
+
+  /* --- update Supabase ----------------------------------------------- */
+  const { error } = await this.supabase
+    .from('turnos')
+    .update({
+      estado:           'realizado',
+      historiaClinica:  form.historiaClinica,
+      diagnostico:      form.diagnostico,
+      resenaEspecialista: form.resenaEspecialista,
+    })
+    .eq('id', turno.id);
+
+  if (!error) {
+    await Swal.fire('Turno finalizado', 'El turno se guardó correctamente', 'success');
+    await this.cargarTurnos();
+  } else {
+    console.error(error);
+    Swal.fire('Error', 'Hubo un problema al guardar los datos', 'error');
   }
+}
 }

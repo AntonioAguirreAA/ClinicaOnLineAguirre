@@ -1,7 +1,7 @@
 export class Turno {
   id: string;
   fecha: Date;
-  estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado';
+  estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado' | 'rechazado';
   especialidad: string;
   paciente: string;
   especialista: string;
@@ -22,7 +22,7 @@ export class Turno {
   constructor(
     id: string,
     fecha: Date,
-    estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado',
+    estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado' | 'rechazado',
     especialidad: string,
     paciente: string,
     especialista: string,
@@ -53,3 +53,9 @@ export class Turno {
     this.encuesta = encuesta;
   }
 }
+export type EstadoTurno =
+  | 'pendiente'
+  | 'aceptado'
+  | 'realizado'
+  | 'cancelado'
+  | 'rechazado';

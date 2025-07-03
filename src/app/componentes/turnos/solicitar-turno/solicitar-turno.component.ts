@@ -47,6 +47,9 @@ export class SolicitarTurnoComponent implements OnInit {
 
   captchaValido = false;
 
+  step = 1;
+  especialistasFiltrados: any[] = [];
+
   /* ---------- Supabase ---------- */
   private sb = inject<SupabaseClient>(SUPABASE);
   constructor(private auth: AuthService, private router: Router) {}
@@ -137,13 +140,18 @@ export class SolicitarTurnoComponent implements OnInit {
     );
   }
 
-  /* -------------- selección especialista ------------ */
-  seleccionarEspecialista(especialista: any) {
-    this.especialistaSeleccionado = especialista;
-    this.especialidadesEspecialista = especialista.especialidades.map((esp: any) => {
-      const match = this.especialidades.find(e => e.nombre === esp.nombre);
-      return match ?? new Especialidad('desconocido', esp.nombre, '...');
-    });
+  seleccionarEspecialista(esp: any) {
+    this.especialistaSeleccionado = esp;
+
+    const disp = esp.especialidades
+      .find((x: any) => x.nombre === this.especialidadSeleccionada)
+      ?.disponibilidad;
+
+    this.diasDisponibles     = disp ? this.generarDiasDisponibles(disp) : [];
+    this.diaSeleccionado     = '';
+    this.horariosDisponibles = [];
+    this.horariosReservados.clear();
+    this.step = 3;
   }
 
   /* ---------------- selección especialidad ------------ */
@@ -216,9 +224,17 @@ export class SolicitarTurnoComponent implements OnInit {
         this.horariosReservados.add(hhmm);   // sólo la hora inicial
       });
     }
+    this.step = 4; // Avanza al paso de selección de horario
   }
 
   seleccionarHorario(h: string) { this.horarioSeleccionado = h; }
+
+volverA(paso: number) {
+    this.step = paso;
+    if (paso < 4)  this.horarioSeleccionado = '';
+    if (paso < 3) { this.diaSeleccionado = ''; this.horariosDisponibles = []; }
+    if (paso < 2) { this.especialistaSeleccionado = null; }
+  }
 
   /* ---------------- confirmar turno ------------------ */
   async confirmarTurno() {
@@ -260,5 +276,20 @@ export class SolicitarTurnoComponent implements OnInit {
     Swal.fire('Error', 'No se pudo guardar el turno', 'error');
   }
 }
+
+seleccionarEspecialidadGlobal(esp: Especialidad) {
+    this.especialidadSeleccionada = esp.nombre;
+    /* filtra especialistas que atienden esa especialidad */
+    this.especialistasFiltrados = this.especialistas.filter(e =>
+      e.especialidades.some((x: any) => x.nombre === esp.nombre)
+    );
+    /* limpiar pasos siguientes */
+    this.especialistaSeleccionado = null;
+    this.diasDisponibles = [];
+    this.horariosDisponibles = [];
+    this.diaSeleccionado = '';
+    this.horarioSeleccionado = '';
+    this.step = 2;
+  }
 
 }

@@ -1,7 +1,6 @@
 <div *ngIf="isAdmin; else noAccess">
   <h2 style="color: white">GESTIÓN DE USUARIOS</h2>
 
-  <!-- ­──────── CARDS ──────── -->
   <div class="card-container">
     <div
       *ngFor="let usuario of usuarios"
@@ -35,26 +34,8 @@
         </p>
 
         <p>Tipo de Usuario: {{ usuario.tipo_usuario }}</p>
-
-        <!-- ­── Botones según rol ── -->
         <div class="card-actions">
-          <!-- ­Paciente 
-          <button
-            *ngIf="usuario.tipo_usuario === 'paciente'"
-            (click)="mostrarHistoriaClinica(usuario)"
-          >
-            {{ pacienteSeleccionado?.id === usuario.id ? "Ocultar" : "Ver" }}
-            Historia Clínica
-          </button>
 
-          <button
-            *ngIf="usuario.tipo_usuario === 'paciente'"
-            (click)="descargarTurnos(usuario)"
-          >
-            Descargar Turnos
-          </button>
--->
-          <!-- ­Especialista -->
           <button
             *ngIf="usuario.tipo_usuario === 'especialista' && usuario.aprobado"
             (click)="inhabilitarEspecialista(usuario)"
@@ -72,7 +53,6 @@
     </div>
   </div>
 
-  <!-- ­──────── FORMULARIO CREAR USUARIO ──────── 
   <div class="register-container">
     <form [formGroup]="registroForm" (ngSubmit)="crearUsuario()">
       <h2>Crear Nuevo Usuario</h2>
@@ -137,7 +117,6 @@
       </button>
     </form>
   </div>
-  -->
 </div>
 
 <ng-template #noAccess>

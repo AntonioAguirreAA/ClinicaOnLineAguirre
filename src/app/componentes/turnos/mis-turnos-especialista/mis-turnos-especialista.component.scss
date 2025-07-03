@@ -164,3 +164,19 @@ h2 {
   text-align: center; /* Centra el texto en los botones */
   min-width: 100px; /* Asegura un ancho mínimo para uniformidad */
 }
+
+.swal-btn-confirmar {
+  background-color: #28a745 !important; // verde
+  color: #fff !important;
+  border-radius: 4px;
+  padding: 6px 18px;
+  font-weight: 600;
+}
+.swal-btn-cancelar {
+  background-color: #dc3545 !important; // rojo
+  color: #fff !important;
+  border-radius: 4px;
+  padding: 6px 18px;
+  margin-left: 8px;
+  font-weight: 600;
+}

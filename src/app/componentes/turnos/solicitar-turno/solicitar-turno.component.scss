@@ -2,12 +2,19 @@
   display: flex;
   justify-content: center; /* Centrado horizontal */
   align-items: center;     /* Centrado vertical */
-  height: 100vh;
-  background: linear-gradient(135deg, #7e98f4, #ebb3b3);
+  height: 70vh;
   padding: 20px;
   box-sizing: border-box;
 }
-
+h4 {
+  color: #ffffff;
+  font-size: 25px;
+  text-align: center;
+  padding: 1rem;
+  background-color: #007BFF;
+  border-radius: 20px;
+  font-weight: lighter;
+}
 /* Contenedor principal */
 .solicitar-turno-container {
   font-family: 'Arial', sans-serif;
@@ -21,7 +28,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 25px;
+  gap: 15px;
   animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -251,6 +258,17 @@ h3 {
   color: white;
 }
 
+.btn-volver {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  background-color: #a50000;
+  color: white;
+}
 
 .btn-confirmar:disabled {
   background-color: #ccc;

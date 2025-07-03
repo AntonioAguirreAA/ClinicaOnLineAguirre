@@ -19,7 +19,7 @@
     color: #2c3e50;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-bottom: 2px solid #4caf50;
+    border-bottom: 2px solid #FF0000;
     padding-bottom: 10px;
   }
   
@@ -39,7 +39,7 @@
   }
   
   .historia-clinica-tabla th {
-    background-color: #4caf50;
+    background-color: #3F478D;
     color: white;
     text-transform: uppercase;
     font-size: 14px;
@@ -59,7 +59,7 @@
   
   .historia-clinica-tabla .diagnostico {
     font-weight: bold;
-    color: #4caf50;
+    color: #FF0000;
   }
   
   .historia-clinica-tabla .datos-dinamicos {
@@ -82,7 +82,7 @@
   /* Mensaje cuando no hay historial */
   .sin-historial {
     text-align: center;
-    color: #7f8c8d;
+    color: #3F478D;
     font-size: 18px;
     margin-top: 20px;
     padding: 20px;

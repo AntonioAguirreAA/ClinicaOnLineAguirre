@@ -11,7 +11,11 @@
     <div class="imagenes-section">
       <h3>Imagen de Perfil:</h3>
       <div class="imagenes-container">
-<img [src]="usuario.imgUrl1" alt="Imagen de perfil" class="imagen-perfil">
+        <img [src]="usuario.imgUrl1" alt="Imagen de perfil" class="imagen-perfil">
+        <img *ngIf="
+        usuario.tipoUsuario === 'paciente'
+      " [src]="usuario.imgUrl2" alt="Imagen de perfil alternativo" class="imagen-perfil">
+
       </div>
     </div>
 

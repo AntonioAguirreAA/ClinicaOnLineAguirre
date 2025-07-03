@@ -34,6 +34,27 @@
       <strong>Mi calificación:</strong> {{ turno.calif_paciente }}/5
     </p>
 
+    <div class="historia-clinica"
+     *ngIf="turno.estado === 'realizado' && turno.historiaClinica?.length">
+
+  <p><strong>Diagnóstico:</strong> {{ turno.diagnostico || '—' }}</p>
+  <p><strong>Altura:</strong> {{ turno.historiaClinica[0].altura }} cm</p>
+  <p><strong>Peso:</strong>   {{ turno.historiaClinica[0].peso }} kg</p>
+  <p><strong>Temperatura:</strong>
+     {{ turno.historiaClinica[0].temperatura }} °C</p>
+  <p><strong>Presión:</strong> {{ turno.historiaClinica[0].presion }}</p>
+
+  <ng-container
+      *ngIf="turno.historiaClinica[0].datosDinamicos?.length">
+    <p><strong>Otros datos:</strong></p>
+    <ul>
+      <li *ngFor="let d of turno.historiaClinica[0].datosDinamicos">
+        {{ d.clave }}: {{ d.valor }}
+      </li>
+    </ul>
+  </ng-container>
+</div>
+
     <!-- Acciones -->
     <div class="actions-container">
       <button

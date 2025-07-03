@@ -11,63 +11,64 @@
   </div>
 
   <!-- Mostrar Especialistas -->
-  <div class="especialistas">
-    <div *ngFor="let especialista of especialistas" class="especialista-card">
-      <p class="especialista-nombre">{{ especialista.nombre }} {{ especialista.apellido }}</p>
-      <button 
-        (click)="seleccionarEspecialista(especialista)" 
-        class="btn-redondo">
-        <img [src]="especialista.imagen" alt="{{ especialista.nombre }}">
-      </button>
-    </div>
-  </div>
-  <!-- Mostrar Especialidades -->
-  <div *ngIf="especialistaSeleccionado" class="especialidades-container">
-    <p class="especialidades-titulo">Especialidades de {{especialistaSeleccionado.nombre}}</p>
+  <ng-container *ngIf="step===1">
+    <h4>Elegí una especialidad</h4>
     <div class="especialidades">
-      <button *ngFor="let especialidad of especialidadesEspecialista" 
-              (click)="seleccionarEspecialidad(especialidad)" 
+      <button *ngFor="let esp of especialidades"
+              (click)="seleccionarEspecialidadGlobal(esp)"
               class="btn-cuadrado">
-        <img [src]="especialidad.imgUrl" alt="{{ especialidad.nombre }}">
-        <p>{{ especialidad.nombre }}</p>
+        <img [src]="esp.imgUrl" alt="{{esp.nombre}}"><p>{{esp.nombre}}</p>
       </button>
     </div>
-  </div>
+  </ng-container>
 
-  <!-- Mostrar Días Disponibles -->
-  <div *ngIf="diasDisponibles.length > 0" class="dias-disponibles">
-    <button *ngFor="let dia of diasDisponibles" 
-            (click)="seleccionarDia(dia)" 
-            [ngClass]="{'active': dia === diaSeleccionado}" 
-            class="btn-rectangular">
-      {{ dia }}
-    </button>
-  </div>
-  <div *ngIf="diasDisponibles.length === 0 && especialidadSeleccionada != ''">
-    <p>No hay días disponibles para esta especialidad.</p>
-  </div>
-  
-  <!-- Mostrar Horarios Disponibles -->
-<div *ngIf="diaSeleccionado" class="horarios-disponibles">
-  <button *ngFor="let horario of horariosDisponibles"
-          (click)="seleccionarHorario(horario)"
-          [disabled]="horariosReservados.has(horario.split(' - ')[0])"
-          [ngClass]="{
-            active: horario === horarioSeleccionado,
-            ocupado: horariosReservados.has(horario.split(' - ')[0])
-          }"
-          class="btn-horario">
-    {{ horario }}
-  </button>
-</div>
+  <!-- PASO 2 · especialistas ----------------------------------------- -->
+  <ng-container *ngIf="step===2">
+    <button class="btn-volver" (click)="volverA(1)">← Atrás</button>
+    <h4>Especialistas que atienden {{especialidadSeleccionada}}</h4>
+    
+    <div class="especialistas">
+      <div *ngFor="let esp of especialistasFiltrados" class="especialista-card">
+        <p class="especialista-nombre">{{esp.nombre}} {{esp.apellido}}</p>
+        <button (click)="seleccionarEspecialista(esp)" class="btn-redondo">
+          <img [src]="esp.imagen" alt="{{esp.nombre}}">
+        </button>
+      </div>
+    </div>
+  </ng-container>
 
+  <!-- PASO 3 · días --------------------------------------------------- -->
+  <ng-container *ngIf="step===3">
+    <button class="btn-volver" (click)="volverA(2)">← Atrás</button>
+    <h4>Elegí un día</h4>
+    <div class="dias-disponibles">
+      <button *ngFor="let d of diasDisponibles"
+              (click)="seleccionarDia(d)"
+              [ngClass]="{active:d===diaSeleccionado}"
+              class="btn-rectangular">{{d}}</button>
+    </div>
+  </ng-container>
 
-  <!-- Botón para confirmar el turno -->
-  <div *ngIf="diaSeleccionado && horarioSeleccionado">
-    <button 
-      (click)="confirmarTurno()" 
-      class="btn-confirmar" >
-      Confirmar Turno
-    </button>
-  </div>
+  <!-- PASO 4 · horarios ---------------------------------------------- -->
+  <ng-container *ngIf="step===4">
+    <button class="btn-volver" (click)="volverA(3)">← Atrás</button>
+    <h4>Elegí un horario</h4>
+    <div class="horarios-disponibles">
+      <button *ngFor="let h of horariosDisponibles"
+              (click)="seleccionarHorario(h)"
+              [disabled]="horariosReservados.has(h.split(' - ')[0])"
+              [ngClass]="{
+                active: h===horarioSeleccionado,
+                ocupado: horariosReservados.has(h.split(' - ')[0])
+              }"
+              class="btn-horario">{{h}}</button>
+    </div>
+
+    <!-- confirmar ----------------------------------------------------- -->
+    <div *ngIf="horarioSeleccionado" class="confirmar">
+      <button class="btn-confirmar" (click)="confirmarTurno()">
+        Confirmar Turno
+      </button>
+    </div>
+  </ng-container>
 </div>
