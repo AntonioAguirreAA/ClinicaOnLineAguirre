@@ -76,6 +76,10 @@ body {
   color: #007bff;
 }
 
+.route-container {
+  position: relative;
+  min-height: 100vh;   /* mantiene la altura mientras se anima */
+}
 /* ==== Botón de logout a la derecha ==== */
 .logout-button a {
   margin-left: auto;

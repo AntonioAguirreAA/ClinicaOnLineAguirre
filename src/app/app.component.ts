@@ -9,11 +9,14 @@ import { CommonModule } from '@angular/common';
 
 import { AuthService } from './servicios/auth.service';
 import { NavbarBotonesDirective } from './directivas/navbar-botones.directive';
+import { routeAnimations } from './animaciones/animacion';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
+  animations: [routeAnimations],
   styleUrls: ['./app.component.scss'],
   imports: [
     RouterOutlet,
@@ -43,5 +46,9 @@ export class AppComponent implements OnInit {
 
   logout() {
     this.auth.logout().then(() => this.router.navigate(['/home']));
+  }
+
+  prepareRoute(outlet: RouterOutlet) {
+    return outlet?.activatedRouteData?.['animation'];
   }
 }

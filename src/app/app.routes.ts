@@ -24,7 +24,8 @@ export const routes: Routes = [
     component: ListaUsuariosComponent,
     canActivate: [AdminGuard],
   },
-  { path: 'mi-perfil', component: MiPerfilComponent },
+    { path: 'mi-perfil',        component: MiPerfilComponent,       data: { animation: 'MiPerfil' } },
+
   {
     path: 'mis-turnos',
     component: TurnosComponent,
@@ -35,7 +36,7 @@ export const routes: Routes = [
     path: 'mis-turnos-especialista',
     component: MisTurnosEspecialistaComponent,
   },
-  { path: 'solicitar-turno', component: SolicitarTurnoComponent },
+  { path: 'solicitar-turno',  component: SolicitarTurnoComponent, data: { animation: 'SolicitarTurno' } },
   { path: 'turnos', component: TurnosComponent, canActivate: [AdminGuard] },
   {
     path: 'estadisticas',

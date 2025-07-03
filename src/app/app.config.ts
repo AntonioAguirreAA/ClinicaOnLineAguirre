@@ -6,6 +6,7 @@ import { routes } from './app.routes';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../environments/environment';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 
 export const SUPABASE = new InjectionToken<SupabaseClient>('supabase');
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(),
+    provideAnimations(),
     provideHttpClient(),
     
     {

@@ -133,5 +133,8 @@
 </nav>
 
 <main>
+  <div [@routeAnimations]="prepareRoute(outlet)">
   <router-outlet #outlet="outlet"></router-outlet>
+</div>
+
 </main>
