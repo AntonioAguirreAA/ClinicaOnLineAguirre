@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------
- * SolicitarTurnoComponent  –  versión Supabase
+ * SolicitarTurnoComponent – versión Supabase
  * ----------------------------------------------------------------- */
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
@@ -28,33 +28,31 @@ moment.locale('es');
 })
 export class SolicitarTurnoComponent implements OnInit {
   especialistas: any[] = [];
-  especialidades: any[] = [];
+  especialidades: Especialidad[] = [];
   pacientes: any[] = [];
+
+  especialidadesEspecialista: any[] = [];          // ← lista del paso 2
   diasDisponibles: string[] = [];
   horariosDisponibles: string[] = [];
-  cargando = true;
-    horariosReservados = new Set<string>(); 
+  horariosReservados = new Set<string>();
 
   usuario: Usuario | null = null;
   tipoUsuario = '';
   pacienteSeleccionado: Usuario | null = null;
 
   especialistaSeleccionado: any = null;
-  especialidadesEspecialista: any[] = [];
   especialidadSeleccionada = '';
   diaSeleccionado = '';
   horarioSeleccionado = '';
 
-  captchaValido = false;
+  step = 1;                                         // 1 = especialistas
+  cargando = true;
 
-  step = 1;
-  especialistasFiltrados: any[] = [];
-
-  /* ---------- Supabase ---------- */
+  /* ----------- Supabase ----------- */
   private sb = inject<SupabaseClient>(SUPABASE);
   constructor(private auth: AuthService, private router: Router) {}
 
-  /* ---------------- lifecycle ---------------- */
+  /* -------- lifecycle ------------ */
   async ngOnInit() {
     try {
       this.usuario = await this.auth.getUserProfile();
@@ -67,14 +65,30 @@ export class SolicitarTurnoComponent implements OnInit {
         await this.cargarPacientes();
       }
     } catch (e) {
-      console.error('Error al cargar especialistas:', e);
+      console.error('Error al cargar datos:', e);
     } finally {
       this.cargando = false;
     }
   }
 
+  /* --------- carga de datos -------- */
+  async cargarEspecialidades() {
+    const { data, error } = await this.sb
+      .from('especialidades')
+      .select('id, nombre, img_url');
 
-  /* -------------- cargar especialistas -------------- */
+    if (error) { console.error(error); return; }
+
+    this.especialidades = data!.map(e =>
+      new Especialidad(
+        e.id,
+        e.nombre,
+        e.img_url ||
+          'https://firebasestorage.googleapis.com/v0/b/labiv-tp-final-56381.firebasestorage.app/o/especialidades%2Fespecialidad-por-defecto.png?alt=media'
+      )
+    );
+  }
+
   async cargarEspecialistas() {
     const { data, error } = await this.sb
       .from('usuarios')
@@ -83,17 +97,16 @@ export class SolicitarTurnoComponent implements OnInit {
 
     if (error) { console.error(error); return; }
 
-    /* map */
     const especialistas = data!.map(u => ({
       uid: u.id,
       nombre: u.nombre,
       apellido: u.apellido,
       imagen: u.img_url_1 || 'ruta-a-imagen-por-defecto.jpg',
       tipoUsuario: u.tipo_usuario,
-      especialidades: [] as any[]
+      especialidades: [] as any[],
     }));
 
-    /* disponibilidad (tabla disponibilidad, PK = uid especialista) */
+    /* traer disponibilidad por especialista */
     for (const esp of especialistas) {
       const { data } = await this.sb
         .from('disponibilidad')
@@ -106,11 +119,10 @@ export class SolicitarTurnoComponent implements OnInit {
     this.especialistas = especialistas;
   }
 
-  /* -------------- cargar pacientes (admin) ---------- */
   async cargarPacientes() {
     const { data, error } = await this.sb
       .from('usuarios')
-      .select('id, nombre, apellido, tipo_usuario')
+      .select('id, nombre, apellido')
       .eq('tipo_usuario', 'paciente');
 
     if (error) { console.error(error); return; }
@@ -119,54 +131,50 @@ export class SolicitarTurnoComponent implements OnInit {
       uid: u.id,
       nombre: u.nombre,
       apellido: u.apellido,
-      tipoUsuario: u.tipo_usuario,
     }));
   }
 
-  /* -------------- cargar especialidades ------------- */
-  async cargarEspecialidades() {
-    const { data, error } = await this.sb
-      .from('especialidades')
-      .select('id, nombre');
-
-    if (error) { console.error(error); return; }
-
-    this.especialidades = data!.map(e =>
-      new Especialidad(
-        e.id,
-        e.nombre,
-        'https://firebasestorage.googleapis.com/v0/b/labiv-tp-final-56381.firebasestorage.app/o/especialidades%2Fespecialidad-por-defecto.png?alt=media&token=0218ba02-1cb2-47cb-b5d2-15f2b6687961'
-      )
-    );
-  }
-
+  /* ---------- selección de ESPECIALISTA (Paso 1) ------------- */
   seleccionarEspecialista(esp: any) {
     this.especialistaSeleccionado = esp;
 
-    const disp = esp.especialidades
-      .find((x: any) => x.nombre === this.especialidadSeleccionada)
-      ?.disponibilidad;
+    /* mapa de especialidades propias + imagen */
+    this.especialidadesEspecialista = esp.especialidades.map((e: any) => {
+      const base = this.especialidades.find(x => x.nombre === e.nombre);
+      return {
+        ...e,
+        imgUrl: base?.imgUrl ||
+          'https://firebasestorage.googleapis.com/v0/b/labiv-tp-final-56381.firebasestorage.app/o/especialidades%2Fespecialidad-por-defecto.png?alt=media',
+      };
+    });
 
-    this.diasDisponibles     = disp ? this.generarDiasDisponibles(disp) : [];
-    this.diaSeleccionado     = '';
+    /* limpia pasos posteriores */
+    this.especialidadSeleccionada = '';
+    this.diasDisponibles = [];
     this.horariosDisponibles = [];
+    this.diaSeleccionado = '';
+    this.horarioSeleccionado = '';
     this.horariosReservados.clear();
-    this.step = 3;
+
+    this.step = 2;                                  // → especialidades
   }
 
-  /* ---------------- selección especialidad ------------ */
-  seleccionarEspecialidad(esp: Especialidad) {
+  /* ---------- selección de ESPECIALIDAD (Paso 2) ------------- */
+  seleccionarEspecialidad(esp: any) {
     this.especialidadSeleccionada = esp.nombre;
 
     const disp = this.especialistaSeleccionado.especialidades
       .find((e: any) => e.nombre === esp.nombre)?.disponibilidad;
 
     this.diasDisponibles = disp ? this.generarDiasDisponibles(disp) : [];
-    this.diaSeleccionado = '';               // reset
+    this.diaSeleccionado = '';
     this.horariosDisponibles = [];
     this.horariosReservados.clear();
+
+    this.step = 3;                                  // → días
   }
 
+  /* ---------- generación de días disponibles ------------- */
   generarDiasDisponibles(disp: any[]): string[] {
     const arr: string[] = [];
     const hoy = moment();
@@ -180,13 +188,13 @@ export class SolicitarTurnoComponent implements OnInit {
     return arr;
   }
 
-  /* ---------------- seleccionar día ------------------ */
+  /* ---------- selección de DÍA (Paso 3) ------------------- */
   async seleccionarDia(d: string) {
     this.diaSeleccionado = d;
     this.horarioSeleccionado = '';
     this.horariosReservados.clear();
 
-    /* ❶ genera las franjas como antes */
+    /* 1) genera franjas horarias */
     const disp = this.especialistaSeleccionado.especialidades
       .find((e: any) => e.nombre === this.especialidadSeleccionada)
       ?.disponibilidad.filter((dd: any) =>
@@ -200,16 +208,18 @@ export class SolicitarTurnoComponent implements OnInit {
       while (desde.isBefore(hasta)) {
         const sig = desde.clone().add(30, 'minutes');
         if (sig.isAfter(hasta)) break;
-        this.horariosDisponibles.push(`${desde.format('HH:mm')} - ${sig.format('HH:mm')}`);
+        this.horariosDisponibles.push(
+          `${desde.format('HH:mm')} - ${sig.format('HH:mm')}`
+        );
         desde.add(30, 'minutes');
       }
     });
 
-    /* ❷ consulta turnos ya reservados para ese especialista-día-especialidad */
+    /* 2) trae turnos ya reservados */
     const startDay = moment(d).startOf('day').toISOString();
-    const endDay   = moment(d).endOf('day').toISOString();
+    const endDay = moment(d).endOf('day').toISOString();
 
-    const { data, error } = await this.sb
+    const { data } = await this.sb
       .from('turnos')
       .select('fecha_hora')
       .eq('especialista_id', this.especialistaSeleccionado.uid)
@@ -218,78 +228,83 @@ export class SolicitarTurnoComponent implements OnInit {
       .gte('fecha_hora', startDay)
       .lte('fecha_hora', endDay);
 
-    if (!error && data) {
-      data.forEach(t => {
-        const hhmm = moment(t.fecha_hora).format('HH:mm');
-        this.horariosReservados.add(hhmm);   // sólo la hora inicial
-      });
-    }
-    this.step = 4; // Avanza al paso de selección de horario
+    data?.forEach(t => {
+      const hhmm = moment(t.fecha_hora).format('HH:mm');
+      this.horariosReservados.add(hhmm);
+    });
+
+    this.step = 4;                                  // → horarios
   }
 
   seleccionarHorario(h: string) { this.horarioSeleccionado = h; }
 
-volverA(paso: number) {
+  volverA(paso: number) {
     this.step = paso;
-    if (paso < 4)  this.horarioSeleccionado = '';
-    if (paso < 3) { this.diaSeleccionado = ''; this.horariosDisponibles = []; }
-    if (paso < 2) { this.especialistaSeleccionado = null; }
+    if (paso < 4) this.horarioSeleccionado = '';
+    if (paso < 3) {
+      this.diaSeleccionado = '';
+      this.horariosDisponibles = [];
+      this.horariosReservados.clear();
+    }
+    if (paso < 2) {
+      this.especialidadSeleccionada = '';
+      this.especialidadesEspecialista = [];
+      this.especialistaSeleccionado = null;
+    }
   }
 
-  /* ---------------- confirmar turno ------------------ */
+  /* ---------- confirmación de turno ----------------------- */
   async confirmarTurno() {
-  const pacienteUID =
-    this.tipoUsuario === 'administrador'
-      ? this.pacienteSeleccionado?.id
-      : this.usuario?.id;
+    const pacienteUID =
+      this.tipoUsuario === 'administrador'
+        ? this.pacienteSeleccionado?.id
+        : this.usuario?.id;
 
-  if (!this.especialistaSeleccionado || !this.especialidadSeleccionada ||
-      !this.diaSeleccionado || !this.horarioSeleccionado || !pacienteUID) {
-    Swal.fire('Faltan datos', 'Completa todos los campos', 'error');
-    return;
+    if (
+      !this.especialistaSeleccionado ||
+      !this.especialidadSeleccionada ||
+      !this.diaSeleccionado ||
+      !this.horarioSeleccionado ||
+      !pacienteUID
+    ) {
+      Swal.fire('Faltan datos', 'Completa todos los campos', 'error');
+      return;
+    }
+
+    /* objeto para Supabase */
+    const nuevoTurno = {
+      fecha_hora: new Date(
+        `${this.diaSeleccionado} ${this.horarioSeleccionado.split(' - ')[0]}`
+      ),
+      estado: 'pendiente',
+      especialidad: this.especialidadSeleccionada,
+      paciente_id: pacienteUID,
+      especialista_id: this.especialistaSeleccionado.uid,
+      resenaEspecialista: '',
+      resenaPaciente: '',
+      diagnostico: '',
+      historiaClinica: [],
+      comentario: '',
+      encuesta: [],
+    };
+
+    const { error } = await this.sb.from('turnos').insert(nuevoTurno);
+
+    if (!error) {
+      this.router.navigate(['/mis-turnos-paciente']);
+    } else {
+      console.error(error);
+      Swal.fire('Error', 'No se pudo guardar el turno', 'error');
+    }
   }
 
-  /* ❶ Objeto con los nombres EXACTOS de la tabla */
-  const nuevoTurno = {
-    fecha_hora: new Date(`${this.diaSeleccionado} ${this.horarioSeleccionado.split(' - ')[0]}`),
-    estado: 'pendiente',
-    especialidad: this.especialidadSeleccionada,
-    paciente_id:      pacienteUID,
-    especialista_id:  this.especialistaSeleccionado.uid,
-    resenaEspecialista: '',
-    resenaPaciente: '',
-    diagnostico: '',
-    "historiaClinica": [],
-    comentario: '',
-    encuesta: []
+  getImagenEspecialidad(nombre: string): string {
+  const key = nombre.toLowerCase();
+  const mapa: Record<string, string> = {
+    Enfermero:  'assets/especialidades/enfermero.webp',
+    Pediatra:   'assets/especialidades/pediatra.webp',
+    Cardiologo: 'assets/especialidades/cardiologo.webp',
   };
-
-  /* ❷ Inserción */
-  const { error } = await this.sb
-    .from('turnos')
-    .insert(nuevoTurno);
-
-  if (!error) {
-    this.router.navigate(['/mis-turnos-paciente']);
-  } else {
-    console.error(error);
-    Swal.fire('Error', 'No se pudo guardar el turno', 'error');
-  }
+  return mapa[key] || 'assets/especialidades/default.webp';
 }
-
-seleccionarEspecialidadGlobal(esp: Especialidad) {
-    this.especialidadSeleccionada = esp.nombre;
-    /* filtra especialistas que atienden esa especialidad */
-    this.especialistasFiltrados = this.especialistas.filter(e =>
-      e.especialidades.some((x: any) => x.nombre === esp.nombre)
-    );
-    /* limpiar pasos siguientes */
-    this.especialistaSeleccionado = null;
-    this.diasDisponibles = [];
-    this.horariosDisponibles = [];
-    this.diaSeleccionado = '';
-    this.horarioSeleccionado = '';
-    this.step = 2;
-  }
-
 }

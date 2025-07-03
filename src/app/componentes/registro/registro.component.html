@@ -1,71 +1,86 @@
 <div class="register-container">
-  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+  <!-- =======================================================
+       PASO 0  ·  Elección de tipo de usuario
+       ======================================================= -->
+  <ng-container *ngIf="step === 0">
     <h2>Registrarse</h2>
+    <p>Seleccioná el tipo de usuario</p>
 
-    <!-- Tipo de usuario -->
-    <label for="tipoUsuario">Tipo de usuario</label>
     <div class="tipo-usuario-buttons">
-      <button
-        type="button"
-        (click)="setTipoUsuario('paciente')"
-        [class.selected]="registroForm.get('tipoUsuario')?.value === 'paciente'"
-      >
-        <img src="assets/paciente.png" alt="Paciente" />
+      <button type="button"
+              (click)="setTipoUsuario('paciente')">
+        <img src="assets/paciente.png" alt="Paciente">
       </button>
-      <button
-        type="button"
-        (click)="setTipoUsuario('especialista')"
-        [class.selected]="
-          registroForm.get('tipoUsuario')?.value === 'especialista'
-        "
-      >
-        <img src="assets/doctor.png" alt="Especialista" />
-      </button>
+      
+      <button type="button"
+      (click)="setTipoUsuario('especialista')">
+      <img src="assets/doctor.png"  alt="Especialista">
+    </button>
+  </div>
+  <div class="tipo-usuario-buttons">
+    
+    <h3>Paciente</h3>
+      <h3>Especialista</h3>
     </div>
+
+  </ng-container>
+
+  <!-- =======================================================
+       PASO 1  ·  Formulario completo de registro
+       ======================================================= -->
+  <form *ngIf="step === 1"
+        [formGroup]="registroForm"
+        (ngSubmit)="onSubmit()">
+    <h2>Registro – {{ tipoUsuario | titlecase }}</h2>
+
+    <!-- volver -->
+    <button type="button"
+            class="btn-volver"
+            (click)="volverPaso0()">
+      ← Volver
+    </button>
 
     <!-- Nombre -->
     <label for="nombre">Nombre</label>
-    <input type="text" formControlName="nombre" id="nombre" />
+    <input id="nombre" type="text" formControlName="nombre"/>
 
     <!-- Apellido -->
     <label for="apellido">Apellido</label>
-    <input type="text" formControlName="apellido" id="apellido" />
+    <input id="apellido" type="text" formControlName="apellido"/>
 
     <!-- Edad -->
     <label for="edad">Edad</label>
-    <input type="number" formControlName="edad" id="edad" />
+    <input id="edad" type="number" formControlName="edad"/>
 
     <!-- DNI -->
     <label for="dni">DNI</label>
-    <input type="text" formControlName="dni" id="dni" />
+    <input id="dni" type="text" formControlName="dni"/>
 
-    <!-- Obra Social solo para paciente -->
+    <!-- Obra social (solo paciente) -->
     <div *ngIf="tipoUsuario === 'paciente'">
       <label for="obraSocial">Obra Social</label>
-      <input type="text" formControlName="obraSocial" id="obraSocial" />
+      <input id="obraSocial" type="text" formControlName="obraSocial"/>
 
       <label for="img2">Imagen 2</label>
-      <input type="file" (change)="agregarImagen($event)" />
+      <input id="img2" type="file" (change)="agregarImagen($event)"/>
     </div>
 
-    <!-- Especialidades solo para especialista -->
+    <!-- Especialidades (solo especialista) -->
     <div *ngIf="tipoUsuario === 'especialista'">
       <h3>Especialidades</h3>
 
-      <!-- Selección -->
-      <label>Seleccionar Especialidad</label>
+      <!-- selección existente -->
+      <label>Seleccionar especialidad</label>
       <select (change)="agregarEspecialidadExistente($event)">
-        <option value="" disabled selected>Selecciona una especialidad</option>
+        <option value="" disabled selected>Seleccioná una especialidad</option>
         <option *ngFor="let esp of especialidades" [value]="esp.id">
           {{ esp.nombre }}
         </option>
       </select>
 
-      <!-- Listado -->
+      <!-- list -->
       <div formArrayName="especialidades">
-        <div
-          *ngFor="let control of especialidadesArray.controls; let i = index"
-        >
+        <div *ngFor="let control of especialidadesArray.controls; let i=index">
           <p>
             {{ control.value }}
             <button type="button" (click)="especialidadesArray.removeAt(i)">
@@ -75,43 +90,44 @@
         </div>
       </div>
 
-      <!-- Nueva -->
-      <label for="nuevaEspecialidad">Nueva Especialidad</label>
-      <input
-        type="text"
-        formControlName="nuevaEspecialidad"
-        placeholder="Nueva especialidad"
-      />
-      <button type="button" (click)="agregarEspecialidad()">Agregar</button>
+      <!-- nueva -->
+      <label for="nuevaEspecialidad">Nueva especialidad</label>
+      <input id="nuevaEspecialidad"
+             type="text"
+             formControlName="nuevaEspecialidad"
+             placeholder="Nueva especialidad"/>
+      <button type="button" (click)="agregarEspecialidad()">
+        Agregar
+      </button>
     </div>
 
-    <!-- Imagen 1 común -->
+    <!-- Imagen 1 (común) -->
     <label for="img1">Imagen 1</label>
-    <input type="file" (change)="agregarImagen($event)" />
+    <input id="img1" type="file" (change)="agregarImagen($event)"/>
 
-    <!-- Email y contraseña -->
+    <!-- Email -->
     <label for="email">Email</label>
-    <input type="email" formControlName="email" id="email" />
+    <input id="email" type="email" formControlName="email"/>
 
+    <!-- Password -->
     <label for="password">Contraseña</label>
-    <input type="password" formControlName="password" id="password" />
+    <input id="password" type="password" formControlName="password"/>
 
     <!-- Captcha -->
-    <re-captcha
-      class="captcha"
-      siteKey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-      (resolved)="onCaptchaResolved($event)"
-    ></re-captcha>
+    <re-captcha  class="captcha"
+                 siteKey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                 (resolved)="onCaptchaResolved($event)">
+    </re-captcha>
 
-    <button
-      type="submit"
-      [disabled]="registroForm.invalid || !recaptchaResponse"
-    >
+    <button type="submit"
+            [disabled]="registroForm.invalid || !recaptchaResponse">
       Registrarse
     </button>
   </form>
 
-  <p>
-    ¿Ya tienes una cuenta? <a [routerLink]="['/login']">Iniciar sesión aquí</a>
-  </p>
 </div>
+<br/>
+<h4 style="color: #fff;">
+  ¿Ya tienes una cuenta?
+  <a style="color: aqua;" [routerLink]="['/login']">Iniciar sesión aquí</a>
+</h4>

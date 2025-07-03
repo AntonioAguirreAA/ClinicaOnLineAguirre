@@ -1,6 +1,7 @@
 <div class="solicitar-turno-container">
   <h3>Sacar Turno</h3>
 
+  <!-- Selección de paciente (solo admin) -->
   <div *ngIf="tipoUsuario === 'administrador'" class="pacientes">
     <label for="paciente">Seleccionar Paciente:</label>
     <select id="paciente" [(ngModel)]="pacienteSeleccionado">
@@ -10,61 +11,80 @@
     </select>
   </div>
 
-  <!-- Mostrar Especialistas -->
-  <ng-container *ngIf="step===1">
-    <h4>Elegí una especialidad</h4>
-    <div class="especialidades">
-      <button *ngFor="let esp of especialidades"
-              (click)="seleccionarEspecialidadGlobal(esp)"
-              class="btn-cuadrado">
-        <img [src]="esp.imgUrl" alt="{{esp.nombre}}"><p>{{esp.nombre}}</p>
-      </button>
-    </div>
-  </ng-container>
-
-  <!-- PASO 2 · especialistas ----------------------------------------- -->
-  <ng-container *ngIf="step===2">
-    <button class="btn-volver" (click)="volverA(1)">← Atrás</button>
-    <h4>Especialistas que atienden {{especialidadSeleccionada}}</h4>
-    
+  <!-- PASO 1 · especialistas ---------------------------------------- -->
+  <ng-container *ngIf="step === 1">
+    <h4>Elegí un especialista</h4>
     <div class="especialistas">
-      <div *ngFor="let esp of especialistasFiltrados" class="especialista-card">
-        <p class="especialista-nombre">{{esp.nombre}} {{esp.apellido}}</p>
+      <div *ngFor="let esp of especialistas" class="especialista-card">
         <button (click)="seleccionarEspecialista(esp)" class="btn-redondo">
-          <img [src]="esp.imagen" alt="{{esp.nombre}}">
+          <img [src]="esp.imagen" alt="{{ esp.nombre }}" />
         </button>
+        <p class="especialista-nombre">{{ esp.nombre }} {{ esp.apellido }}</p>
       </div>
     </div>
   </ng-container>
 
-  <!-- PASO 3 · días --------------------------------------------------- -->
-  <ng-container *ngIf="step===3">
+  <!-- PASO 2 · especialidades --------------------------------------- -->
+  <ng-container *ngIf="step === 2">
+  <button class="btn-volver" (click)="volverA(1)">← Atrás</button>
+  <h4>Especialidades de {{ especialistaSeleccionado?.nombre }} {{ especialistaSeleccionado?.apellido }}</h4>
+
+  <div class="especialidades">
+    <div
+      *ngFor="let esp of especialidadesEspecialista"
+      class="especialidad-card"
+    >
+      <button class="btn-cuadrado" (click)="seleccionarEspecialidad(esp)">
+        <ng-container [ngSwitch]="esp.nombre">
+  <img *ngSwitchCase="'Enfermero'"  src="assets/especialidades/enfermero.webp"  alt="Enfermero" />
+  <img *ngSwitchCase="'Pediatra'"   src="assets/especialidades/pediatra.webp"   alt="Pediatra" />
+  <img *ngSwitchCase="'Cardiologo'" src="assets/especialidades/cardiologo.webp" alt="Cardiólogo" />
+  <img *ngSwitchDefault             src="assets/especialidades/default.webp"    [alt]="esp.nombre" />
+</ng-container>
+      </button>
+      <h5 class="especialidad-nombre">{{ esp.nombre }}</h5>
+    </div>
+  </div>
+</ng-container>
+
+  <!-- PASO 3 · días -------------------------------------------------- -->
+  <ng-container *ngIf="step === 3">
     <button class="btn-volver" (click)="volverA(2)">← Atrás</button>
     <h4>Elegí un día</h4>
+
     <div class="dias-disponibles">
-      <button *ngFor="let d of diasDisponibles"
-              (click)="seleccionarDia(d)"
-              [ngClass]="{active:d===diaSeleccionado}"
-              class="btn-rectangular">{{d}}</button>
+      <button
+        *ngFor="let d of diasDisponibles"
+        (click)="seleccionarDia(d)"
+        [ngClass]="{ active: d === diaSeleccionado }"
+        class="btn-rectangular"
+      >
+        {{ d }}
+      </button>
     </div>
   </ng-container>
 
-  <!-- PASO 4 · horarios ---------------------------------------------- -->
-  <ng-container *ngIf="step===4">
+  <!-- PASO 4 · horarios --------------------------------------------- -->
+  <ng-container *ngIf="step === 4">
     <button class="btn-volver" (click)="volverA(3)">← Atrás</button>
     <h4>Elegí un horario</h4>
+
     <div class="horarios-disponibles">
-      <button *ngFor="let h of horariosDisponibles"
-              (click)="seleccionarHorario(h)"
-              [disabled]="horariosReservados.has(h.split(' - ')[0])"
-              [ngClass]="{
-                active: h===horarioSeleccionado,
-                ocupado: horariosReservados.has(h.split(' - ')[0])
-              }"
-              class="btn-horario">{{h}}</button>
+      <button
+        *ngFor="let h of horariosDisponibles"
+        (click)="seleccionarHorario(h)"
+        [disabled]="horariosReservados.has(h.split(' - ')[0])"
+        [ngClass]="{
+          active: h === horarioSeleccionado,
+          ocupado: horariosReservados.has(h.split(' - ')[0])
+        }"
+        class="btn-horario"
+      >
+        {{ h }}
+      </button>
     </div>
 
-    <!-- confirmar ----------------------------------------------------- -->
+    <!-- Confirmación -->
     <div *ngIf="horarioSeleccionado" class="confirmar">
       <button class="btn-confirmar" (click)="confirmarTurno()">
         Confirmar Turno

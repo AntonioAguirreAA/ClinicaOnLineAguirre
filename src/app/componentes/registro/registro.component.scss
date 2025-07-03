@@ -1,15 +1,16 @@
 :host {
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 80vh;
+  height: 90vh;
   padding: 20px;
   box-sizing: border-box;
   overflow: hidden;
 }
 
 .register-container {
-  height: 500px;
+  height: 900px;
   width: 100%;
   max-width: 800px;
   font-family: system-ui;
@@ -67,7 +68,7 @@ button {
   padding: 14px 20px;
   margin: 8px 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 2px;
   cursor: pointer;
   width: 100%;
   font-family: inherit;
@@ -85,17 +86,17 @@ button:disabled {
 }
 
 /* Media query para pantallas más pequeñas */
-@media (max-height: 600px) {
+@media (max-height: 800px) {
   .register-container {
     padding: 10px;
-    max-height: 80vh;
+    max-height: 90vh;
   }
 }
 
 .tipo-usuario-buttons {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 20px;
+  margin-bottom: 1px;
 }
 
 .tipo-usuario-buttons button {
@@ -103,9 +104,9 @@ button:disabled {
   border: none;
   cursor: pointer;
   padding: 0;
-  border-radius: 50%;
-  width: 70px; /* Ajusta el tamaño de los botones */
-  height: 70px; /* Asegúrate de que el ancho y el alto sean iguales para mantener la forma redonda */
+  border-radius: 10px;
+  width: 150px; /* Ajusta el tamaño de los botones */
+  height: 150px; /* Asegúrate de que el ancho y el alto sean iguales para mantener la forma redonda */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -114,7 +115,7 @@ button:disabled {
 
 .tipo-usuario-buttons button.selected {
   border: 3px solid #4c5baf; /* Resalta el botón seleccionado */
-  border-radius: 50%;
+  border-radius: 20p;
 }
 
 .tipo-usuario-buttons button:hover {
@@ -124,7 +125,7 @@ button:disabled {
 .tipo-usuario-buttons img {
   width: 100%;
   height: 100%;
-  border-radius: 50%; /* Hace que las imágenes también sean redondas */
+  border-radius: 20%; /* Hace que las imágenes también sean redondas */
   object-fit: cover; /* Asegura que la imagen se ajuste correctamente sin deformarse */
 }
 
